@@ -1,0 +1,22 @@
+{
+  "name": "wbdv-sp21-01-weiwei-server-node-codeleague",
+  "version": "1.0.0",
+  "description": "Node server for Code League",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paqc5/wbdv-sp21-codeleague-finalproject-backend.git"
+  },
+  "author": "weiwei",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paqc5/wbdv-sp21-codeleague-finalproject-backend/issues"
+  },
+  "homepage": "https://github.com/paqc5/wbdv-sp21-codeleague-finalproject-backend#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
