@@ -6,7 +6,7 @@ module.exports = (app) => {
         res.send(types)
     }
     const findTypeById = (req, res) => {
-        const typeId = req.params['typeId']
+        const typeId = parseInt(req.params['typeId'])
         const type = elementTypeService.findTypeById(typeId)
         res.send(type)
     }

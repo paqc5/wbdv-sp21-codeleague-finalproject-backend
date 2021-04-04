@@ -11,7 +11,7 @@ app.use(function (req, res, next) {
 });
 
 require('./controllers/element-type-contrller')(app)
-require('./controllers/team-contrller')(app)
-require('./controllers/event-contrller')(app)
+require('./controllers/event-controller')(app)
+require('./controllers/team-controller')(app)
 
 app.listen(3000)

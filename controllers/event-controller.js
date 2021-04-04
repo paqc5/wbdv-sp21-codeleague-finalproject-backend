@@ -6,7 +6,7 @@ module.exports = (app) => {
         res.send(events)
     }
     const findEventById = (req, res) => {
-        const eventId = req.params['eventId']
+        const eventId = parseInt(req.params['eventId'])
         const event = eventService.findEventById(eventId)
         res.send(event)
     }

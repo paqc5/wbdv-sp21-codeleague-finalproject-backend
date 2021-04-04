@@ -6,7 +6,7 @@ module.exports = (app) => {
         res.send(teams)
     }
     const findTeamById = (req, res) => {
-        const teamId = req.params['teamId']
+        const teamId = parseInt(req.params['teamId'])
         const team = teamService.findTeamById(teamId)
         res.send(team)
     }
