@@ -1,15 +1,17 @@
-const teams = require("./teams.json")
+const teams = require('./teams.json');
 
 const findAllTeams = () => {
-    return teams
-}
+  return teams;
+};
 
 const findTeamById = (teamId) => {
-    return teams.filter((team) => {
-        return team.id === teamId
-    })
-}
+//   console.log('type:', typeof teams);
+  return teams.filter((team) => {
+    return team.id === teamId;
+  });
+};
 
 module.exports = {
-    findAllTeams, findTeamById
-}
+  findAllTeams,
+  findTeamById,
+};
