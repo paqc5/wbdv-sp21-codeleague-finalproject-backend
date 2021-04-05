@@ -1,15 +1,19 @@
-const eventService = require("../services/events/event-service")
+const eventService = require("../services/event-service")
 
 module.exports = (app) => {
+
     const findAllEvents = (req, res) => {
-        const events = eventService.findAllEvents()
-        res.send(events)
-    }
+        eventService.findAllEvents().then((result) => {
+            res.send(result)
+        });
+    };
+
     const findEventById = (req, res) => {
         const eventId = parseInt(req.params['eventId'])
-        const event = eventService.findEventById(eventId)
-        res.send(event)
-    }
+        eventService.findEventById(eventId).then((result) => {
+            res.send(result)
+        });
+    };
 
     app.get("/api/events", findAllEvents)
     app.get("/api/events/:eventId", findEventById)
