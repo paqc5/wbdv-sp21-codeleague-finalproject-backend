@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const userSchema = require('../models/user-model');
 const userModel = mongoose.model('UserModel', userSchema);
 
-function findUserById(userId) { }
-function findUserByUsername(username) { }
-function findUserByCredentials(username, password) { }
-function createUser(user) { }
-function deleteUser(userId) { }
-function updateUser(userId, newUser) { }
+function findUserById(userId) { };
+function findUserByUsername(username) { };
+function findUserByCredentials(username, password) { };
+function createUser(user) { };
+function deleteUser(userId) { };
+function updateUser(userId, newUser) { };
 
 function getUserTeam(fplEmail, fplPassword, managerId) {
     return fpl

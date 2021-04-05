@@ -33,12 +33,12 @@ function login(req, res) {
         } else {
           res.send(0);
         }});
-}
+};
 
 function logout(req, res) {
   req.session.destroy();
   res.send(200);
-}
+};
 
 function profile(req, res) { }
 
@@ -50,12 +50,12 @@ function getUserTeam(req, res) {
     getUserTeam(fplEmail, fplPassword, managerId).then((team) => {
       res.send(team);
     });
-}
+};
 
 module.exports = function (app) {
   app.post('/api/login', login);
   app.post('/api/register', register);
   app.post('/api/logout', logout);
   app.get('/api/profile', profile);
-  app.get('/api/:fplEmail/:fplPassword/managerId', getUserTeam);
+  app.get('/api/:fplEmail/:fplPassword/:managerId', getUserTeam);
 }
