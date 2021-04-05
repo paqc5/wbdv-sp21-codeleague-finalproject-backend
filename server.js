@@ -2,6 +2,18 @@ const express = require('express');
 const app = express();
 PORT = process.env.PORT || 3000;
 
+const session = require('express-session')
+app.use(session({
+  resave: false, saveUninitialized: true,
+  secret: 'shhh, dont tell anyone'
+}));
+
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -15,20 +27,12 @@ app.use(function (req, res, next) {
   next();
 });
 
-require('./controllers/element-type-contrller')(app);
+require('./controllers/element-type-controller')(app);
 require('./controllers/event-controller')(app);
 require('./controllers/team-controller')(app);
 require('./controllers/player-controller')(app);
-<<<<<<< HEAD
-// require('./controllers/user-controller')(app);
-
-app.listen(PORT);
-
-console.log('App listening on ' + PORT);
-=======
 require('./controllers/user-controller')(app);
 
 app.listen(PORT);
 
 console.log('App listening on ' + PORT);
->>>>>>> af8343222a3b6b577689616bf9450f69cd106a53
