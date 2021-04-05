@@ -2,17 +2,17 @@ const express = require('express');
 const app = express();
 PORT = process.env.PORT || 3000;
 
-const session = require('express-session')
-app.use(session({
-  resave: false, saveUninitialized: true,
-  secret: 'shhh, dont tell anyone'
-}));
+// const session = require('express-session')
+// app.use(session({
+//   resave: false, saveUninitialized: true,
+//   secret: 'shhh, dont tell anyone'
+// }));
 
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+// const bodyParser = require('body-parser');
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({
+//   extended: true
+// }));
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
