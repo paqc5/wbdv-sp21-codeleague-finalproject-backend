@@ -18,9 +18,19 @@
   },
   "homepage": "https://github.com/paqc5/wbdv-sp21-codeleague-finalproject-backend#readme",
   "dependencies": {
+<<<<<<< HEAD
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "fpl-api": "^2.2.1"
+  },
+  "devDependencies": {
+    "axios": "^0.21.1"
+=======
     "axios": "^0.21.1",
     "express": "^4.17.1",
     "fpl-api": "^2.2.1",
     "nodemon": "^2.0.7"
+>>>>>>> af8343222a3b6b577689616bf9450f69cd106a53
   }
 }

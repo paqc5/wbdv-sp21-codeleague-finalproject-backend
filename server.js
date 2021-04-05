@@ -19,8 +19,16 @@ require('./controllers/element-type-contrller')(app);
 require('./controllers/event-controller')(app);
 require('./controllers/team-controller')(app);
 require('./controllers/player-controller')(app);
+<<<<<<< HEAD
+// require('./controllers/user-controller')(app);
+
+app.listen(PORT);
+
+console.log('App listening on ' + PORT);
+=======
 require('./controllers/user-controller')(app);
 
 app.listen(PORT);
 
 console.log('App listening on ' + PORT);
+>>>>>>> af8343222a3b6b577689616bf9450f69cd106a53
