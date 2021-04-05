@@ -1,10 +1,10 @@
 // bring api data into service
 // manipulate it in service
-// const fpl = require('fpl-api');
+const fpl = require('fpl-api');
 const axios = require('axios');
 const BASE_API_URL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
-// const API_URL_HISTORY =
-//     'https://fantasy.premierleague.com/api/element-summary/251/';
+const API_URL_HISTORY =
+    'https://fantasy.premierleague.com/api/element-summary/251/';
 const PROXY_API_URL = 'https://codeleague-cors-proxy.herokuapp.com/';
 
 // do one all api info call
@@ -32,6 +32,7 @@ const findAllPlayers = () => {
 // how do you put promise response in a variable for caching
 // let allPlayers;
 // return findAllPlayers().then((res) => res);
+
 // can cache all players on the frontend or the backend
 // why do I have to return the axios call
 // axios-cache-adapter
@@ -55,3 +56,9 @@ module.exports = {
     findPlayer,
     findPlayerPosition,
 };
+
+// findAllPlayers
+
+// call to api
+// parsing it for desired player information
+// return

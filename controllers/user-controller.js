@@ -1,4 +1,4 @@
-// const userService = require('../services/user-service');
+const userService = require('../services/user-service');
 //
 // function register(req, res) {
 //   const username = req.body.username;
@@ -52,15 +52,17 @@
 //     });
 // };
 
-const userService = require('../services/user-service');
-
 module.exports = (app) => {
     app.get('/api/user/team', function (req, res) {
-        userService.getTeam().then((team) => {
-            res.send(team);
-        });
+        // read email and password from request body
+        userService
+            .findUserTeam('hluzinho@gmail.com', 'codeLeague123')
+            .then((team) => {
+                res.send(team);
+            });
     });
-};
+}
+
 
 // module.exports = function (app) {
 //     app.post('/api/login', login);

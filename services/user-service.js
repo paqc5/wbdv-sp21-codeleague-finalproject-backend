@@ -1,4 +1,6 @@
 const fpl = require('fpl-api');
+const playerService = require('../services/player-service');
+
 // const mongoose = require('mongoose');
 // const userSchema = require('../models/user-model');
 // const userModel = mongoose.model('UserModel', userSchema);
@@ -19,16 +21,28 @@ const fpl = require('fpl-api');
 //         });
 // };
 
-const getTeam = () => {
+const findUserTeam = (userEmail, userPassword) => {
     return fpl
-        .fetchSession('ndabemahluza@gmail.com', '8Mum*Fled')
-        .then((cookie) => {
-            //   console.log(cookie);
-            return fpl.fetchMyTeam(cookie, 1349618);
-        });
+        .fetchSession(userEmail, userPassword)
+        .then((cookie) =>
+            fpl.fetchCurrentUser(cookie).then((user) =>
+                // const user = res;
+                fpl.fetchMyTeam(cookie, user.player.entry)
+            )
+        )
+        .then((team) =>
+            playerService.findAllPlayers().then((allPlayers) => {
+                const userTeam = team.picks.map((player) =>
+                    allPlayers.filter(
+                        (singlePlayer) => singlePlayer.id === player.element
+                    )
+                );
+                return userTeam;
+            })
+        );
 };
 
-module.exports = { getTeam };
+module.exports = { findUserTeam };
 
 // module.exports = {
 //     findUserById: findUserById,
