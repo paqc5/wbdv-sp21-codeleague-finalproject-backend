@@ -4,7 +4,7 @@ const fpl = require('fpl-api');
 const axios = require('axios');
 const BASE_API_URL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
 const API_URL_HISTORY =
-  'https://fantasy.premierleague.com/api/element-summary/251/';
+    'https://fantasy.premierleague.com/api/element-summary/251/';
 const PROXY_API_URL = 'https://codeleague-cors-proxy.herokuapp.com/';
 let players;
 // do one all api info call
