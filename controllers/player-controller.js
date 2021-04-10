@@ -8,9 +8,16 @@ module.exports = (app) => {
     });
   };
 
-  const findPlayer = (req, res) => {
+  const findPlayerById = (req, res) => {
     const playerId = parseInt(req.params['playerId']);
-    playerService.findPlayer(playerId).then((result) => res.send(result));
+    playerService.findPlayerById(playerId).then((result) => res.send(result));
+  };
+
+  const findPlayerByName = (req, res) => {
+    let firstname = req.query.firstname === undefined ? "" : req.query.firstname
+    let lastname = req.query.lastname === undefined ? "" :  req.query.lastname;
+    playerService.findPlayerByName(firstname, lastname)
+      .then((result) => res.send(result));
   };
 
   const findPlayerPosition = (req, res) => {
@@ -23,9 +30,7 @@ module.exports = (app) => {
 
   // is it necessary to have playerId here?
   app.get('/api/players', findAllPlayers);
-  app.get('/api/players/:playerId', findPlayer);
-  app.get(
-    '/api/players/:playerId/positions/:elementTypeId',
-    findPlayerPosition
-  );
+  app.get('/api/players/:playerId', findPlayerById);
+  app.get('/api/player', findPlayerByName);
+  app.get('/api/players/:playerId/positions/:elementTypeId', findPlayerPosition);
 };
