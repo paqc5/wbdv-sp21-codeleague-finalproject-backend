@@ -6,7 +6,7 @@ const BASE_API_URL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
 const API_URL_HISTORY =
   'https://fantasy.premierleague.com/api/element-summary/251/';
 const PROXY_API_URL = 'https://codeleague-cors-proxy.herokuapp.com/';
-
+let players;
 // do one all api info call
 // cache
 let getConfig = {
@@ -14,6 +14,10 @@ let getConfig = {
     url: PROXY_API_URL,
     headers: { 'Target-URL': BASE_API_URL, 'Content-Type': 'application/json' },
 };
+
+// variable that checks for null
+// if null fetches
+// if not
 
 const findAllPlayers = () => {
     // Alternative approach
@@ -23,7 +27,11 @@ const findAllPlayers = () => {
     // a list of objects that is a hashmap where key is element code
 
     return axios(getConfig)
-        .then((response) => response.data.elements)
+        .then((response) => {
+            players = response.data.elements
+            response.data.elements
+            console.log(players)
+        })
         .catch((error) => {
             console.log(error);
         });
