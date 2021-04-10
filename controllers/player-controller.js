@@ -3,6 +3,7 @@ const playerService = require('../services/player-service');
 module.exports = (app) => {
   const findAllPlayers = (req, res) => {
     playerService.findAllPlayers().then((result) => {
+      // console.log('result:', result[0]);
       res.send(result);
     });
   };
