@@ -49,14 +49,14 @@ const findCurrentEvent = () => {
     });
 }
 
-// const findMatchesForEvent = (eventId) => {
-//   axios.get(PROXY_API_URL, fixturesConfig)
-//     .then(response => 
-//       response.data.filter(event => event.event === eventId))
-//         .catch((error) => {
-//           console.log(error);
-//         });
-// }
+const findMatchesForEvent = (eventId) => {
+  axios.get(PROXY_API_URL, fixturesConfig)
+    .then(response => 
+      response.data.filter(event => event.event === eventId))
+        .catch((error) => {
+          console.log(error);
+        });
+}
 
 const findEventAndMatches = () => {
 
@@ -116,5 +116,5 @@ const findEventAndMatches = () => {
 }
 
 module.exports = {
-  findAllEvents, findCurrentEvent, findEventById, findEventAndMatches
+  findAllEvents, findCurrentEvent, findEventById, findMatchesForEvent, findEventAndMatches
 }

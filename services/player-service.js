@@ -72,16 +72,16 @@ const findPlayerPosition = (elementTypeId) => {
 
 
 //TODO: Finish get all the games positions
-// const findPlayersPositions = () => {
-//     return axios(baseConfig)
-//         .then(response => {
-//             console.log("in service")
-//             console.log(response.data.element_types)
-//         })
-//         .catch((error) => {
-//             console.log(error);
-//         });
-// };
+const findPlayersPositions = () => {
+    return axios(baseConfig)
+        .then(response => {
+            console.log("in service")
+            console.log(response.data.element_types)
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
 
 module.exports = {
     findAllPlayers,
