@@ -73,6 +73,7 @@ const findEventAndMatches = () => {
       matches['event_id'] = rs[0].id
       matches['event_name'] = rs[0].name
 
+      // TODO: explore using query parameter instead https://fantasy.premierleague.com/api/fixtures?event=31
       // Get Json object from fixture API
       return axios(fixturesConfig)
         .then(fixRs => {
@@ -113,6 +114,7 @@ const findEventAndMatches = () => {
     }).catch((error) => {
       console.log(error);
     })
+
 }
 
 module.exports = {
