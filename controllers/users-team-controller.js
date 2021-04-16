@@ -1,85 +1,13 @@
-const userService = require('../services/user-service');
-//
-// function register(req, res) {
-//   const username = req.body.username;
-//   const password = req.body.password;
-//   const newUser = {
-//     username: username,
-//     password: password
-//   };
-//
-//   userService
-//       .findUserByUsername(username)
-//       .then(function (user) {
-//         if(!user) {
-//           return userService
-//               .createUser(newUser)}})
-//       .then(function (user) {
-//         req.session['currentUser'] = user;
-//         res.send(user);
-//       });
-// };
-//
-// function login(req, res) {
-//   const username = req.body.username;
-//   const password = req.body.password;
-//
-//   userService
-//       .findUserByCredentials(username, password)
-//       .then(function (user) {
-//         if(user) {
-//           req.session['currentUser'] = user;
-//           res.send(user);
-//         } else {
-//           res.send(0);
-//         }});
-// };
-//
-// function logout(req, res) {
-//   req.session.destroy();
-//   res.send(200);
-// };
-//
-// function profile(req, res) { };
+const usersTeamService = require('../services/users-team-service');
 
 module.exports = (app) => {
   
   app.get('/api/user/team', function (req, res) {
     // read email and password from request body
-    userService
+      usersTeamService
       .findUserTeam('hluzinho@gmail.com', 'codeLeague123')
       .then((team) => {
         res.send(team);
       });
   });
-
-  function register(req, res) {
-    const username = req.body.username;
-    const password = req.body.password;
-    const newUser = {
-      username: username,
-      password: password,
-    };
-
-    userService
-      .findUserByUsername(username)
-      .then(function (user) {
-        if (!user) {
-          return userModel.createUser(newUser);
-        }
-      })
-      .then(function (user) {
-        req.session['currentUser'] = user;
-        res.send(user);
-      });
-  }
-
 }
-
-// module.exports = function (app) {
-//     app.post('/api/login', login);
-//     app.post('/api/register', register);
-//     app.post('/api/logout', logout);
-//     app.get('/api/profile', profile);
-//   // app.get('/api/userteam/:fplEmail/:fplPassword/:managerId', getUserTeam);
-// }
