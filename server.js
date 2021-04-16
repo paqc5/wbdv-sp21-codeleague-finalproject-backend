@@ -2,22 +2,22 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const session = require('express-session');
-app.use(
-  session({
+const session = require('express-session')
+app.use(session({
+    secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
-    secret: 'shhh, dont tell anyone',
-  })
-);
+    // cookie: { secure: true }
+}))
+
+const mongoose = require('mongoose');
+mongoose.connect(
+    'mongodb+srv://weiwei:qscfthnji@cluster0.95dme.mongodb.net/test',
+    {useNewUrlParser: true, useUnifiedTopology: true});
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
+app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -64,7 +64,8 @@ require('./controllers/element-type-controller')(app);
 require('./controllers/event-controller')(app);
 require('./controllers/team-controller')(app);
 require('./controllers/player-controller')(app);
-require('./controllers/user-controller')(app);
+require('./controllers/users-team-controller')(app);
+require('./controllers/users-controller')(app);
 
 app.listen(PORT);
 
