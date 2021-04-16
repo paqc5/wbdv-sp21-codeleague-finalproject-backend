@@ -1,31 +1,16 @@
 const playerService = require('../services/player-service');
 
 module.exports = (app) => {
-  const findAllPlayers = (req, res) => {
-    let players = playerService.findAllPlayers();
-    // console.log('players:');
-    if (players instanceof Promise) {
-      players.then((result) => {
-        // console.log('if triggered');
-        res.send(result);
-      });
-    } else {
-      // console.log('else triggered');
-      res.send(players);
-    }
-  };
 
   const findPlayerDetails = (req, res) => {
-    let playerId = parseInt(req.params['playerId'])
-    playerService
-      .findPlayerDetails(playerId)
-      .then((playerDetails) => res.send(playerDetails));
+    let playerId = req.params['playerId']
+    playerService.findPlayerDetails(playerId)
+        .then((playerDetails) => res.send(playerDetails));
   };
 
-  const findAndParseAllPlayers = (req, res) => {
-    playerService.findAndParseAllPlayers().then((parsedPlayers) => {
-      // console.log('players:', parsedPlayers);
-      res.send(parsedPlayers);
+  const findAllPlayers = (req, res) => {
+    playerService.findAllPlayers().then((response) => {
+      res.send(response);
     });
   };
 
@@ -38,8 +23,7 @@ module.exports = (app) => {
     let firstname =
       req.query.firstname === undefined ? '' : req.query.firstname;
     let lastname = req.query.lastname === undefined ? '' : req.query.lastname;
-    playerService
-      .findPlayerByName(firstname, lastname)
+    playerService.findPlayerByName(firstname, lastname)
       .then((result) => res.send(result));
   };
 
@@ -51,13 +35,17 @@ module.exports = (app) => {
       .then((result) => res.send(result));
   };
 
+  const findTopTenPlayers = (req, res) => {
+    playerService
+      .findTopTenPlayers()
+      .then((result) => res.send(result));
+  };
+
   // is it necessary to have playerId here?
-  app.get('/api/players', findAndParseAllPlayers);
-  // app.get('/api/players/:playerId', findPlayerById);
-  app.get('/api/player', findPlayerByName);
-  app.get('/api/players/:playerId', findPlayerDetails);
-  app.get(
-    '/api/players/:playerId/positions/:elementTypeId',
-    findPlayerPosition
-  );
+  app.get('/api/players', findAllPlayers);
+  app.get('/api/players/:playerId', findPlayerById);
+  app.get('/api/search/players', findPlayerByName);
+  app.get('/api/players/:playerId/details', findPlayerDetails);
+  app.get('/api/players/:playerId/positions/:elementTypeId',findPlayerPosition);
+  app.get('/api/search/players/top-ten',findTopTenPlayers);
 };
