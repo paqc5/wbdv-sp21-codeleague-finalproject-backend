@@ -47,7 +47,7 @@ const findUserTeam = (userEmail, userPassword) => {
 };
 
 const mongoose = require('mongoose');
-const userSchema = require('../models/user-model');
+const userSchema = require('../models/users-schema');
 const userModel = mongoose.model('UserModel', userSchema);
 
 function findUserById(userId) {}
