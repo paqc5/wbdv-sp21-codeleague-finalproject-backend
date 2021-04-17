@@ -3,7 +3,7 @@ const configs = require('./api-configs');
 const teamService = require('./team-service');
 
 // caches
-let players;
+var players;
 let teams;
 
 const findPlayerDetails = (playerId) => {
@@ -79,6 +79,8 @@ const findAndParseAllPlayers = () => {
       allPlayers = response.data.elements;
       positions = response.data.element_types;
       teams = response.data.teams;
+      // current event
+      ce = response.data.events.filter((event) => event.is_next === true);
 
       // TODO: undo slice to parse all players
       allPlayers.map((player) => {
@@ -107,6 +109,31 @@ const findAndParseAllPlayers = () => {
       players = allParsedPlayers;
       return players;
     })
+    .then((players) => {
+      // current event id
+      let cei = ce[0].id;
+      return axios(configs.buildGameweekScoresConfig(cei - 1)).then(
+        (PlayerGameWeekStats) => {
+          let playerPerformance = PlayerGameWeekStats.data.elements;
+          for (i = 0; i < playerPerformance.length; i++) {
+            players[i].total_points_previous =
+              playerPerformance[i].stats.total_points;
+          }
+          console.log(
+            'players score:',
+            // map through player
+            // filter stats for id that matches player id
+            // add attribute
+            playerPerformance[0].stats.total_points
+          );
+          return players;
+          // stats.map(player =>)
+          // players.map(player => {return {...player, total_points_previous: status.total_points}})
+          // return PlayerGameWeekScores.data.elements
+        }
+      );
+      // players.map(player => {return {...player, score: }})
+    })
     .catch((error) => {
       console.log(error);
     });
@@ -116,6 +143,26 @@ const findAndParseAllPlayers = () => {
 // TODO: use Mongo
 const findTopFive = () => {
   /*
+  this occurs before a user can look up a player
+  currently finding and parsing all players
+  but when does that happen
+  probably shouldn't happen only when a user logs in
+  we just need to have it ready to go
+  and stored
+  so should we have our player summary stored
+  cost and selected by can be in fluctuation
+  cost only updated once a day in fpl though
+  not sure about selected - probably the same
+  so we can have it stored
+  and only run it like once a day
+  sorting should be done in a database
+  
+  fact is, need to:
+  - sort all positions by highest scores
+
+  first step
+  - adding gameweek score to findAndParsePlayers
+
   return dream team: https://fantasy.premierleague.com/api/dream-team/30/
   https://fantasy.premierleague.com/api/event/31/live
   live endpoint contains no element_type information
@@ -174,4 +221,5 @@ module.exports = {
   findPlayerByName,
   findPlayerPosition,
   findPlayerDetails,
+  players,
 };

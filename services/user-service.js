@@ -36,6 +36,7 @@ const findUserTeam = (userEmail, userPassword) => {
     )
     .then((team) =>
       playerService.findAndParseAllPlayers().then((allPlayers) => {
+        console.log('players:', playerService.players);
         const userTeam = team.picks.map((player) =>
           allPlayers.filter(
             (singlePlayer) => singlePlayer.id === player.element

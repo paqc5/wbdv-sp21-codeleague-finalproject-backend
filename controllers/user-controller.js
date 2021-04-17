@@ -43,7 +43,6 @@ const userService = require('../services/user-service');
 // function profile(req, res) { };
 
 module.exports = (app) => {
-  
   app.get('/api/user/team', function (req, res) {
     // read email and password from request body
     userService
@@ -73,8 +72,7 @@ module.exports = (app) => {
         res.send(user);
       });
   }
-
-}
+};
 
 // module.exports = function (app) {
 //     app.post('/api/login', login);
