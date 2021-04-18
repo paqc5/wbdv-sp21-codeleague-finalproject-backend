@@ -2,16 +2,21 @@ const axios = require('axios');
 const configs = require('./api-configs');
 const teamService = require('./team-service');
 
+// caches
+var players;
+let teams;
 const findAllPlayers = () => {
-
-  let allParsedPlayers = []
+  let allParsedPlayers = [];
 
   // TODO: add live gameweek score to parsed player for easy search
   return axios(configs.baseConfig)
     .then((response) => {
+      teams = response.data.teams;
+      // current event
+      ce = response.data.events.filter((event) => event.is_next === true);
       let allPlayers = response.data.elements;
       let playersPositions = response.data.element_types;
-      let totalPlayers = allPlayers.length
+      let totalPlayers = allPlayers.length;
 
       // TODO: undo slice to parse all players
       allPlayers.map((player) => {
@@ -35,11 +40,13 @@ const findAllPlayers = () => {
 
         // find element_type attribute in player object
         // use as index in element_types object to get player position
-        let playerPosition = playersPositions[player.element_type - 1]
+        let playerPosition = playersPositions[player.element_type - 1];
         spp.position_info = {
           id: playerPosition.id,
-          player_position: playerPosition.singular_name, player_position_short_name: playerPosition.singular_name_short, total_players: playerPosition.element_count
-        }
+          player_position: playerPosition.singular_name,
+          player_position_short_name: playerPosition.singular_name_short,
+          total_players: playerPosition.element_count,
+        };
 
         // find player team id in player object
         // use as index in teams object to get player team
@@ -48,99 +55,140 @@ const findAllPlayers = () => {
         spp.team_info = {
           id: team.id,
           team_name: team.name,
-          team_short_name: team.short_name
+          team_short_name: team.short_name,
         };
 
         // Add the amount of players
-        spp.total_players = totalPlayers
+        spp.total_players = totalPlayers;
 
         allParsedPlayers.push(spp);
-      })
+      });
       return allParsedPlayers;
+    })
+    .then((players) => {
+      // current event id
+      let cei = ce[0].id;
+      return axios(configs.buildGameweekScoresConfig(cei - 1)).then(
+        (PlayerGameWeekStats) => {
+          let playerPerformance = PlayerGameWeekStats.data.elements;
+          for (i = 0; i < playerPerformance.length; i++) {
+            players[i].total_points_previous =
+              playerPerformance[i].stats.total_points;
+          }
+          console.log(
+            'players score:',
+            // map through player
+            // filter stats for id that matches player id
+            // add attribute
+            playerPerformance[0].stats.total_points
+          );
+          return players;
+          // stats.map(player =>)
+          // players.map(player => {return {...player, total_points_previous: status.total_points}})
+          // return PlayerGameWeekScores.data.elements
+        }
+      );
+      // players.map(player => {return {...player, score: }})
     })
     .catch((error) => {
       console.log(error);
     });
 };
 
-
 const findPlayerDetails = (playerId) => {
+  return axios(configs.baseConfig).then((response) => {
+    let teams = response.data.teams;
 
-  return axios(configs.baseConfig)
-    .then(response => {
-      let teams = response.data.teams
+    return axios(configs.buildDetailsConfig(playerId))
+      .then((playerDetails) => {
+        let details = {};
+        let seasonHistory = playerDetails.data.history_past;
+        let n = seasonHistory.length;
+        let recentSeasonHistory = seasonHistory.slice(n - 2, n);
+        let fixtureHistory = playerDetails.data.history;
+        n = fixtureHistory.length;
+        let recentFixtureHistory = playerDetails.data.history.slice(n - 5, n);
+        let parsedFixtureHistory = [];
 
-      return axios(configs.buildDetailsConfig(playerId))
-        .then((playerDetails) => {
+        // for setting fixture gameweek in map
+        n -= 4;
+        recentFixtureHistory.map((fixture) => {
+          // spf: singleParsedFixture
+          let spf = {};
+          spf.opponent_team = teams[fixture.opponent_team - 1].name;
+          // n referencing fixedHistory.length - 4
+          spf.gameweek = n++;
+          spf.score = fixture.total_points;
+          spf.minutes_played = fixture.minutes;
+          spf.was_home = fixture.was_home;
 
-          let details = {};
-          let seasonHistory = playerDetails.data.history_past;
-          let n = seasonHistory.length;
-          let recentSeasonHistory = seasonHistory.slice(n - 2, n);
-          let fixtureHistory = playerDetails.data.history;
-          n = fixtureHistory.length;
-          let recentFixtureHistory = playerDetails.data.history.slice(n - 5, n);
-          let parsedFixtureHistory = [];
+          // injury status for past fixtures not available
+          // TODO: keep track of injurty status going forward
 
-          // for setting fixture gameweek in map
-          n -= 4;
-          recentFixtureHistory.map((fixture) => {
-            // spf: singleParsedFixture
-            let spf = {};
-            spf.opponent_team = teams[fixture.opponent_team - 1].name;
-            // n referencing fixedHistory.length - 4
-            spf.gameweek = n++;
-            spf.score = fixture.total_points;
-            spf.minutes_played = fixture.minutes;
-            spf.was_home = fixture.was_home;
-
-            // injury status for past fixtures not available
-            // TODO: keep track of injurty status going forward
-
-            parsedFixtureHistory.push(spf);
-          });
-
-          // next 10 fixtures or remaining fixtures
-          let upcomingFixtures = playerDetails.data.fixtures;
-          let parsedUpcomingFixtures = [];
-          let i = 0;
-          while (upcomingFixtures[i] && i != 10) {
-            // spuf: singleParsedUpcomingFixture
-            let spuf = {};
-            spuf.event_name = upcomingFixtures[i].event_name;
-            spuf.team_h = teams[upcomingFixtures[i].team_h - 1].short_name;
-            spuf.team_a = teams[upcomingFixtures[i].team_a - 1].short_name;
-            spuf.is_home = upcomingFixtures[i].is_home;
-            spuf.difficulty = upcomingFixtures[i].difficulty;
-            parsedUpcomingFixtures.push(spuf);
-            i++;
-          }
-
-          // transfer activity from most recent gameweek
-          n = recentFixtureHistory.length;
-          let lastFixture = recentFixtureHistory[n - 1];
-          details.transfers = {
-            in: lastFixture.transfers_in,
-            out: lastFixture.transfers_out,
-            balance: lastFixture.transfers_balance,
-          };
-
-          details.season_history = recentSeasonHistory;
-          details.fixture_history = parsedFixtureHistory;
-          details.upcoming_fixtures = parsedUpcomingFixtures;
-
-          return details;
-        })
-        .catch((error) => {
-          console.log(error);
+          parsedFixtureHistory.push(spf);
         });
-    })
+
+        // next 10 fixtures or remaining fixtures
+        let upcomingFixtures = playerDetails.data.fixtures;
+        let parsedUpcomingFixtures = [];
+        let i = 0;
+        while (upcomingFixtures[i] && i != 10) {
+          // spuf: singleParsedUpcomingFixture
+          let spuf = {};
+          spuf.event_name = upcomingFixtures[i].event_name;
+          spuf.team_h = teams[upcomingFixtures[i].team_h - 1].short_name;
+          spuf.team_a = teams[upcomingFixtures[i].team_a - 1].short_name;
+          spuf.is_home = upcomingFixtures[i].is_home;
+          spuf.difficulty = upcomingFixtures[i].difficulty;
+          parsedUpcomingFixtures.push(spuf);
+          i++;
+        }
+
+        // transfer activity from most recent gameweek
+        n = recentFixtureHistory.length;
+        let lastFixture = recentFixtureHistory[n - 1];
+        details.transfers = {
+          in: lastFixture.transfers_in,
+          out: lastFixture.transfers_out,
+          balance: lastFixture.transfers_balance,
+        };
+
+        details.season_history = recentSeasonHistory;
+        details.fixture_history = parsedFixtureHistory;
+        details.upcoming_fixtures = parsedUpcomingFixtures;
+
+        return details;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
 };
 
 // find top 5 scoring players for each position
 // TODO: use Mongo
 const findTopFivePlayers = () => {
   /*
+  this occurs before a user can look up a player
+  currently finding and parsing all players
+  but when does that happen
+  probably shouldn't happen only when a user logs in
+  we just need to have it ready to go
+  and stored
+  so should we have our player summary stored
+  cost and selected by can be in fluctuation
+  cost only updated once a day in fpl though
+  not sure about selected - probably the same
+  so we can have it stored
+  and only run it like once a day
+  sorting should be done in a database
+  
+  fact is, need to:
+  - sort all positions by highest scores
+
+  first step
+  - adding gameweek score to findAndParsePlayers
+
   return dream team: https://fantasy.premierleague.com/api/dream-team/30/
   https://fantasy.premierleague.com/api/event/31/live
   live endpoint contains no element_type information
@@ -172,8 +220,7 @@ const findPlayerPosition = (elementTypeId) => {
 };
 
 const findPlayerByName = (inputNameOne, inputNameTwo) => {
-  return findAllPlayers()
-  .then((res) =>
+  return findAllPlayers().then((res) =>
     res.filter((player) => {
       let firstName =
         player.first_name !== undefined ? player.first_name.toLowerCase() : '';
@@ -182,14 +229,11 @@ const findPlayerByName = (inputNameOne, inputNameTwo) => {
           ? player.second_name.toLowerCase()
           : '';
       if (inputNameTwo === 'noLastname') {
-
         if (firstName === inputNameOne || lastName === inputNameOne) {
           return true;
         }
         return false;
-
       } else {
-
         if (firstName === inputNameOne && lastName === inputNameTwo) {
           return true;
         }
@@ -200,30 +244,27 @@ const findPlayerByName = (inputNameOne, inputNameTwo) => {
 };
 
 const findTopTenPlayers = () => {
-  return findAllPlayers()
-    .then(response => {
+  return findAllPlayers().then((response) => {
+    let sortedArr;
+    let topTen = [];
 
-      let sortedArr
-      let topTen = []
-
-      sortedArr = response.sort((a, b) => {
-        if (parseFloat(a.total_points) > parseFloat(b.total_points)) {
-          return -1
-        }
-        if (parseFloat(a.total_points) < parseFloat(b.total_points)) {
-          return 1
-        }
-        return 0
-      })
-
-      for (let i = 0; i < 10; i++) {
-        topTen[i] = sortedArr[i]
+    sortedArr = response.sort((a, b) => {
+      if (parseFloat(a.total_points) > parseFloat(b.total_points)) {
+        return -1;
       }
+      if (parseFloat(a.total_points) < parseFloat(b.total_points)) {
+        return 1;
+      }
+      return 0;
+    });
 
-      return topTen
+    for (let i = 0; i < 10; i++) {
+      topTen[i] = sortedArr[i];
+    }
 
-    })
-}
+    return topTen;
+  });
+};
 
 module.exports = {
   findAllPlayers,
@@ -231,5 +272,5 @@ module.exports = {
   findPlayerByName,
   findPlayerPosition,
   findPlayerDetails,
-  findTopTenPlayers
+  findTopTenPlayers,
 };
