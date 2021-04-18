@@ -1,5 +1,7 @@
-// const mongodbUsername = process.env.mongodbAtlasUsername
-// const mongodbPassword = process.env.mongodbAtlasPassword
+require('dotenv').config()
+
+const mongodbUsername = process.env.mongodbAtlasUsername
+const mongodbPassword = process.env.mongodbAtlasPassword
 
 const express = require('express');
 const app = express();
@@ -15,7 +17,7 @@ app.use(session({
 
 const mongoose = require('mongoose');
 mongoose.connect(
-    `mongodb+srv://weiwei:qscfthnji@cluster0.95dme.mongodb.net/codeleague`,
+    `mongodb+srv://${mongodbUsername}:${mongodbPassword}@cluster0.95dme.mongodb.net/codeleague`,
     {useNewUrlParser: true, useUnifiedTopology: true});
 
 const bodyParser = require('body-parser');
