@@ -5,7 +5,7 @@ const findAllUsers = () => {
 }
 
 const findUserByUsername = (username) => {
-    return usersModel.find({username})
+    return usersModel.find({username: username})
 }
 
 const findUserByCredentials = (credentials) => {

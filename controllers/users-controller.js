@@ -2,6 +2,14 @@ const usersService = require("../services/users-service")
 
 module.exports = (app) => {
 
+    const findAllUsers = (req, res) => {
+        usersService.findAllUsers()
+            .then((users) => {
+                console.log(users)
+                res.send(users)
+            })
+    }
+
     const register = (req, res) => {
         const user = req.body;
         usersService.register(user, res)
@@ -30,12 +38,6 @@ module.exports = (app) => {
         res.send(200);
     }
 
-    const findAllUsers = (req, res) => {
-        usersService.findAllUsers()
-            .then((users) => {
-                res.send(users)
-            })
-    }
 
     app.post("/api/users/profile", profile);
     app.post("/api/users/register", register);

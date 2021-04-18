@@ -1,5 +1,9 @@
 const usersDAO = require("../daos/users-dao")
 
+const findAllUsers = () => {
+    return usersDAO.findAllUsers();
+}
+
 const register = (user, res) => {
     return usersDAO.findUserByUsername(user.username)
         .then((user) => {
@@ -20,10 +24,6 @@ const login = (credentials, res) => {
                 res.send(0)
             }
         })
-}
-
-const findAllUsers = () => {
-    return usersDAO.findAllUsers();
 }
 
 module.exports = {
