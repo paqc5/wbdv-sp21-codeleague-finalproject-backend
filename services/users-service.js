@@ -4,13 +4,13 @@ const findAllUsers = () => {
     return usersDAO.findAllUsers();
 }
 
-const register = (user, res) => {
-    return usersDAO.findUserByUsername(user.username)
+const register = (newUser, res) => {
+    return usersDAO.findUserByUsername(newUser.username)
         .then((user) => {
             if (user.length > 0) {
                 res.send(403)
             } else {
-                return usersDAO.createUser(user);
+                return usersDAO.createUser(newUser);
             }
         })
 }
@@ -18,7 +18,8 @@ const register = (user, res) => {
 const login = (credentials, res) => {
     return usersDAO.findUserByCredentials(credentials)
         .then((actualUser) => {
-            if (actualUser.length > 0) {
+            // console.log(actualUser)
+            if (actualUser) {
                 return actualUser
             } else {
                 res.send(0)

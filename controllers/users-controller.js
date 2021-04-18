@@ -5,7 +5,7 @@ module.exports = (app) => {
     const findAllUsers = (req, res) => {
         usersService.findAllUsers()
             .then((users) => {
-                console.log(users)
+                // console.log(users)
                 res.send(users)
             })
     }
@@ -21,6 +21,8 @@ module.exports = (app) => {
 
     const login = (req, res) => {
         const credentials = req.body;
+        // console.log('req:')
+        // console.log(credentials)
         usersService.login(credentials)
             .then((actualUser) => {
                     req.session['profile'] = actualUser
