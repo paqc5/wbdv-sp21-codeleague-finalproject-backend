@@ -3,9 +3,9 @@ const usersService = require("../services/users-service")
 module.exports = (app) => {
 
     const findAllUsers = (req, res) => {
-        usersService.findAllUsers()
+        const user = req.session['profile']
+        usersService.findAllUsers(user, res)
             .then((users) => {
-                // console.log(users)
                 res.send(users)
             })
     }
@@ -21,8 +21,6 @@ module.exports = (app) => {
 
     const login = (req, res) => {
         const credentials = req.body;
-        // console.log('req:')
-        // console.log(credentials)
         usersService.login(credentials)
             .then((actualUser) => {
                     req.session['profile'] = actualUser
@@ -35,6 +33,14 @@ module.exports = (app) => {
         res.send(currentUser)
     }
 
+    const profileAfterLoggedIn = (req, res) => {
+        const userId = req.params['userName']
+        usersService.findUserByUsername(userId)
+            .then(user => {
+                return res.send(user)
+            })
+    }
+
     const logout = (req, res) => {
         req.session.destroy();
         res.sendStatus(200);
@@ -43,25 +49,20 @@ module.exports = (app) => {
     const updateUser = (req, res) => {
         const newUser = req.body;
         const currentUser = req.session['profile']
-        if (newUser._id === currentUser._id || currentUser.role === 'ADMIN') {
-            usersService.updateUser(newUser)
-                .then(newUser => {
-                    res.send(newUser)
-                })
-        }
+        usersService.updateUser(newUser, currentUser, res)
+            .then(newUser => {
+                res.send(newUser)
+            })
     }
 
-    // Unfinished
     const deleteUser = (req, res) => {
         const deleteUser = req.body;
         const currentUser = req.session['profile']
-        if (deleteUser._id === currentUser._id || currentUser.role === 'ADMIN') {
-            usersService.deleteUser(deleteUser)
-        }
-
+        usersService.deleteUser(currentUser, deleteUser, res)
     }
 
     app.post("/api/users/profile", profile);
+    app.get("/api/users/profile/:userName", profileAfterLoggedIn);
     app.post("/api/users/register", register);
     app.post("/api/users/login", login);
     app.post('/api/users/logout', logout);

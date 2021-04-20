@@ -23,10 +23,8 @@ const createUser = (user) => {
     return usersModel.create(user)
 }
 
-// Unfinished
 const deleteUser = (user) => {
     usersModel.remove({username: user.username})
-    return 1
 };
 
 const updateUser = (user, newUser) => {
