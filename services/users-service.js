@@ -17,7 +17,7 @@ const login = (credentials, res) => {
             if (actualUser) {
                 return actualUser
             } else {
-                res.send(0)
+                res.sendStatus(0)
             }
         })
 }
@@ -27,16 +27,16 @@ const updateUser = (newUser, currentUser, res) => {
         const user = usersDAO.findUserById(newUser._id)
         return usersDAO.updateUser(user, newUser)
     } else {
-        res.send(403)
+        res.sendStatus(403)
     }
 }
 
 const deleteUser = (deleteUser, currentUser, res) => {
     if (deleteUser._id === currentUser._id || currentUser.role === 'ADMIN') {
         usersDAO.deleteUser(deleteUser)
-        res.send(1)
+        res.sendStatus(1)
     } else {
-        res.send(403)
+        res.sendStatus(403)
     }
 }
 
@@ -44,12 +44,12 @@ const findAllUsers = (user, res) => {
     if (user.role === 'ADMIN') {
         return usersDAO.findAllUsers();
     } else {
-        res.send(403)
+        res.sendStatus(403)
     }
 }
 
-const findUserByUsername = (userName) => {
-    return usersDAO.findUserByUsername(userName)
+const findUserById = (userId) => {
+    return usersDAO.findUserById(userId)
 }
 
 module.exports = {
@@ -58,5 +58,5 @@ module.exports = {
     findAllUsers,
     updateUser,
     deleteUser,
-    findUserByUsername
+    findUserById
 };

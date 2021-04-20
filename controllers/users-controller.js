@@ -2,14 +2,6 @@ const usersService = require("../services/users-service")
 
 module.exports = (app) => {
 
-    const findAllUsers = (req, res) => {
-        const user = req.session['profile']
-        usersService.findAllUsers(user, res)
-            .then((users) => {
-                res.send(users)
-            })
-    }
-
     const register = (req, res) => {
         const user = req.body;
         usersService.register(user, res)
@@ -34,8 +26,8 @@ module.exports = (app) => {
     }
 
     const profileAfterLoggedIn = (req, res) => {
-        const userId = req.params['userName']
-        usersService.findUserByUsername(userId)
+        const userId = req.params['userId']
+        usersService.findUserById(userId)
             .then(user => {
                 return res.send(user)
             })
@@ -61,8 +53,16 @@ module.exports = (app) => {
         usersService.deleteUser(currentUser, deleteUser, res)
     }
 
+    const findAllUsers = (req, res) => {
+        const user = req.session['profile']
+        usersService.findAllUsers(user, res)
+            .then((users) => {
+                res.send(users)
+            })
+    }
+
     app.post("/api/users/profile", profile);
-    app.get("/api/users/profile/:userName", profileAfterLoggedIn);
+    app.get("/api/users/profile/:userId", profileAfterLoggedIn);
     app.post("/api/users/register", register);
     app.post("/api/users/login", login);
     app.post('/api/users/logout', logout);
