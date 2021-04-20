@@ -8,6 +8,10 @@ const findUserByUsername = (username) => {
     return usersModel.find({username: username})
 }
 
+const findUserById = (userId) => {
+    return usersModel.findById(userId)
+}
+
 const findUserByCredentials = (credentials) => {
     return usersModel.findOne({
         username: credentials.username,
@@ -19,9 +23,15 @@ const createUser = (user) => {
     return usersModel.create(user)
 }
 
-const deleteUser = (user) => {};
+// Unfinished
+const deleteUser = (user) => {
+    usersModel.remove({username: user.username})
+    return 1
+};
 
-const updateUser = (user, newUser) => {};
+const updateUser = (user, newUser) => {
+    return usersModel.save({username: user.username}, newUser)
+};
 
 module.exports = {
     findUserByUsername,
@@ -29,5 +39,6 @@ module.exports = {
     createUser,
     deleteUser,
     updateUser,
-    findAllUsers
+    findAllUsers,
+    findUserById
 }

@@ -4,6 +4,19 @@ const findAllUsers = () => {
     return usersDAO.findAllUsers();
 }
 
+const updateUser = (newUser) => {
+    const user = usersDAO.findUserById(newUser._id)
+    return usersDAO.updateUser(user, newUser)
+        .then(newUser => {
+            return newUser
+        })
+}
+
+// Unfinished
+const deleteUser = (user) => {
+    return usersDAO.deleteUser(user)
+}
+
 const register = (newUser, res) => {
     return usersDAO.findUserByUsername(newUser.username)
         .then((user) => {
@@ -30,5 +43,7 @@ const login = (credentials, res) => {
 module.exports = {
     register,
     login,
-    findAllUsers
+    findAllUsers,
+    updateUser,
+    deleteUser
 };
