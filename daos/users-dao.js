@@ -4,8 +4,8 @@ const findAllUsers = () => {
     return usersModel.find();
 }
 
-const findUserByUsername = (username) => {
-    return usersModel.find({username})
+const findUserById = (userId) => {
+    return usersModel.findById(userId)
 }
 
 const findUserByCredentials = (credentials) => {
@@ -19,15 +19,19 @@ const createUser = (user) => {
     return usersModel.create(user)
 }
 
-const deleteUser = (user) => {};
+const deleteUser = (user) => {
+    usersModel.remove({username: user.username})
+};
 
-const updateUser = (user, newUser) => {};
+const updateUser = (user, newUser) => {
+    return usersModel.save({username: user.username}, newUser)
+};
 
 module.exports = {
-    findUserByUsername,
     findUserByCredentials,
     createUser,
     deleteUser,
     updateUser,
-    findAllUsers
+    findAllUsers,
+    findUserById
 }
