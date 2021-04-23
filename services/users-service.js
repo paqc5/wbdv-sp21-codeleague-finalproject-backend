@@ -52,11 +52,52 @@ const findUserById = (userId) => {
     return usersDAO.findUserById(userId)
 }
 
+const findUserFollowing = (currentUser) => {
+    const currentUserName = currentUser.username
+    return usersDAO.findUserFollowing(currentUserName)
+}
+
+const addUserFollowing = (currentUser, followingUsername) => {
+    const currentUserName = currentUser.username
+    usersDAO.addOneFollowing(currentUserName, followingUsername)
+    return usersDAO.findUserFollowing(currentUserName)
+}
+
+const deleteUserFollowing = (currentUser, followingUsername) => {
+    const currentUserName = currentUser.username
+    usersDAO.deleteOneFollower(currentUserName, followingUsername)
+    return usersDAO.findUserFollowing(currentUserName)
+}
+
+const findUserFollowers = (currentUser) => {
+    const currentUserName = currentUser.username
+    return usersDAO.findUserFollowers(currentUserName)
+}
+
+const addUserFollower = (currentUser, followerUsername) => {
+    const currentUserName = currentUser.username
+    usersDAO.addOneFollower(currentUserName, followerUsername)
+    return usersDAO.findUserFollowers(currentUserName)
+}
+
+const deleteUserFollower = (currentUser, followerUsername) => {
+    const currentUserName = currentUser.username
+    usersDAO.deleteOneFollower(currentUserName, followerUsername)
+    return usersDAO.findUserFollowers(currentUserName)
+}
+
+
 module.exports = {
     register,
     login,
     findAllUsers,
     updateUser,
     deleteUser,
-    findUserById
+    findUserById,
+    findUserFollowing,
+    addUserFollowing,
+    deleteUserFollowing,
+    findUserFollowers,
+    addUserFollower,
+    deleteUserFollower
 };

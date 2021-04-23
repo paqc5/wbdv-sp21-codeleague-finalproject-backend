@@ -61,6 +61,58 @@ module.exports = (app) => {
             })
     }
 
+    const findUserFollowing = (req, res) => {
+        const currentUser = req.session['profile']
+        usersService.findUserFollowing(currentUser)
+            .then((userFollowing) => {
+                res.send(userFollowing)
+            })
+    }
+
+    const addUserFollowing = (req, res) => {
+        const currentUser = req.session['profile']
+        const followingUsername = res.body
+        usersService.addUserFollowing(currentUser, followingUsername)
+            .then((newUserFollowing) => {
+                res.send(newUserFollowing)
+            })
+    }
+
+    const deleteUserFollowing = (req, res) => {
+        const currentUser = req.session['profile']
+        const followingUsername = res.body
+        usersService.deleteUserFollowing(currentUser, followingUsername)
+            .then((newUserFollowing) => {
+                res.send(newUserFollowing)
+            })
+    }
+
+    const findUserFollowers = (req, res) => {
+        const currentUser = req.session['profile']
+        usersService.findUserFollowers(currentUser)
+            .then((userFollower) => {
+                res.send(userFollower)
+            })
+    }
+
+    const addUserFollower = (req, res) => {
+        const currentUser = req.session['profile']
+        const followerUsername = res.body
+        usersService.addUserFollower(currentUser, followerUsername)
+            .then((newUserFollower) => {
+                res.send(newUserFollower)
+            })
+    }
+
+    const deleteUserFollower = (req, res) => {
+        const currentUser = req.session['profile']
+        const followerUsername = res.body
+        usersService.deleteUserFollower(currentUser, followerUsername)
+            .then((newUserFollower) => {
+                res.send(newUserFollower)
+            })
+    }
+
     app.post("/api/users/profile", profile);
     app.get("/api/users/profile/:userId", profileAfterLoggedIn);
     app.post("/api/users/register", register);
@@ -69,4 +121,10 @@ module.exports = (app) => {
     app.get('/api/users', findAllUsers);
     app.put('/api/users/update', updateUser);
     app.delete('api/users/delete', deleteUser)
+    app.get('/api/users/following', findUserFollowing);
+    app.put('/api/users/following/add', addUserFollowing);
+    app.put('/api/users/following/delete', deleteUserFollowing);
+    app.get('/api/users/followers', findUserFollowers);
+    app.put('/api/users/followers/add', addUserFollower);
+    app.put('/api/users/followers/delete', deleteUserFollower);
 }
