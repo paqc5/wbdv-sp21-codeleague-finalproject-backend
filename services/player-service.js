@@ -2,10 +2,17 @@ const axios = require('axios');
 const configs = require('./api-configs');
 const teamService = require('./team-service');
 
+// parent to both
+
+// const usersTeamService = require('./users-team-service');
 // caches
-var players;
+// var cachedPlayers;
 let teams;
+
 const findAllPlayers = () => {
+  // if (cachedPlayers) console.log('cachedPlayers:', cachedPlayers[0]);
+  // if (usersTeamService.cachedPlayers)
+  //   console.log('cachedPlayers:', usersTeamService.cachedPlayers[0]);
   let allParsedPlayers = [];
 
   // TODO: add live gameweek score to parsed player for easy search
@@ -75,13 +82,8 @@ const findAllPlayers = () => {
             players[i].total_points_previous =
               playerPerformance[i].stats.total_points;
           }
-          console.log(
-            'players score:',
-            // map through player
-            // filter stats for id that matches player id
-            // add attribute
-            playerPerformance[0].stats.total_points
-          );
+
+          cachedPlayers = players;
           return players;
           // stats.map(player =>)
           // players.map(player => {return {...player, total_points_previous: status.total_points}})
