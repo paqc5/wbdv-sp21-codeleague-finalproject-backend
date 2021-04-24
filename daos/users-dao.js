@@ -34,57 +34,57 @@ const findUserByCredentials = (credentials) => {
   });
 };
 
-const findUserFollowing = (username) => {
-  return usersModel.find({ username: username }, { _id: 0, userFollowing: 1 });
-};
+const findUserFollowing = (fplEmail) => {
+    return usersModel.find({fplEmail: fplEmail},{_id: 0, userFollowing: 1})
+}
 
-const addOneFollowing = (username, followingUsername) => {
-  return usersModel.updateOne(
-    { username: username },
-    {
-      $push: {
-        userFollowing: followingUsername,
-      },
-    }
-  );
-};
+const addOneFollowing = (fplEmail, followingUsername) => {
+    return usersModel.updateOne(
+        {fplEmail: fplEmail},
+        {
+            $push: {
+                userFollowing: followingUsername
+            }
+        }
+    )
+}
 
-const deleteOneFollowing = (username, followingUsername) => {
-  return usersModel.updateOne(
-    { username: username },
-    {
-      $pull: {
-        userFollowing: followingUsername,
-      },
-    }
-  );
-};
+const deleteOneFollowing = (fplEmail, followingUsername) => {
+    return usersModel.updateOne(
+        {fplEmail: fplEmail},
+        {
+            $pull: {
+                userFollowing: followingUsername
+            }
+        }
+    )
+}
 
-const findUserFollowers = (username) => {
-  return usersModel.find({ username: username }, { _id: 0, userFollowers: 1 });
-};
+const findUserFollowers = (fplEmail) => {
+    return usersModel.find({fplEmail: fplEmail},{_id: 0, userFollowers: 1})
+}
 
-const addOneFollower = (username, followerUsername) => {
-  return usersModel.updateOne(
-    { username: username },
-    {
-      $push: {
-        userFollower: followerUsername,
-      },
-    }
-  );
-};
+const addOneFollower = (fplEmail, followerUsername) => {
+    return usersModel.updateOne(
+        {fplEmail: fplEmail},
+        {
+            $push: {
+                userFollower: followerUsername
+            }
+        }
+    )
+}
 
-const deleteOneFollower = (username, followerUsername) => {
-  return usersModel.updateOne(
-    { username: username },
-    {
-      $pull: {
-        userFollower: followerUsername,
-      },
-    }
-  );
-};
+const deleteOneFollower = (fplEmail, followerUsername) => {
+    return usersModel.updateOne(
+        {fplEmail: fplEmail},
+        {
+            $pull: {
+                userFollower: followerUsername
+            }
+        }
+    )
+}
 
 module.exports = {
   findUserByUsername,
