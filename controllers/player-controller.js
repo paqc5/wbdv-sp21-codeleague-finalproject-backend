@@ -3,8 +3,11 @@ const playerService = require('../services/player-service');
 module.exports = (app) => {
 
   const findPlayerDetails = (req, res) => {
+    let currentUser = req.session['profile']
+    console.log("current user:", currentUser.savedData)
+    currentUser = currentUser.savedData 
     let playerId = req.params['playerId']
-    playerService.findPlayerDetails(playerId)
+    playerService.findPlayerDetails(playerId, currentUser)
         .then((playerDetails) => res.send(playerDetails));
   };
 

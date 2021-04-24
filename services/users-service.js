@@ -18,7 +18,7 @@ const register = (newUser, res) => {
         } else {
           usersDAO.createUser(newUser);
           return { registered: true, msg: 'user succesfully created' };
-            // res.sendStatus(200);
+          // res.sendStatus(200);
         }
       })
     )
@@ -57,10 +57,10 @@ then you know it's an invalid password problem
 const login = (credentials, res) => {
   // console.log('login function');
   let cache = usersTeamService.cached();
-  if (cache) console.log('cachedPlayers from login:', cache[0]);
-  else {
-    console.log('cachedPlayers from login:', cache);
-  }
+  // if (cache) console.log('cachedPlayers from login:', cache[0]);
+  // else {
+  //   console.log('cachedPlayers from login:', cache);
+  // }
   return usersDAO.findUserByEmail(credentials.fplEmail).then((actualUser) => {
     let actualUserInfo = {};
     if (actualUser) {
@@ -68,6 +68,11 @@ const login = (credentials, res) => {
       return usersTeamService
         .findUserTeam(actualUser.fplEmail, credentials.fplPassword)
         .then((team) => {
+          let teamToSave = team.map((player) => player[0].id);
+          usersDAO.saveUserTeam(actualUser.fplEmail, teamToSave);
+          // usersDAO.findUserByEmail(actualUser.fplEmail).then((res) => {
+          //   console.log('user return', res);
+          // });
           actualUserInfo.team = team;
           return actualUserInfo;
         })
@@ -123,51 +128,50 @@ const findUserById = (userId) => {
 };
 
 const findUserFollowing = (currentUser) => {
-    const currentUserEmail = currentUser.fplEmail
-    return usersDAO.findUserFollowing(currentUserEmail)
-}
+  const currentUserEmail = currentUser.fplEmail;
+  return usersDAO.findUserFollowing(currentUserEmail);
+};
 
 const addUserFollowing = (currentUser, followingUsername) => {
-    const currentUserEmail = currentUser.fplEmail
-    usersDAO.addOneFollowing(currentUserEmail, followingUsername)
-    return usersDAO.findUserFollowing(currentUserEmail)
-}
+  const currentUserEmail = currentUser.fplEmail;
+  usersDAO.addOneFollowing(currentUserEmail, followingUsername);
+  return usersDAO.findUserFollowing(currentUserEmail);
+};
 
 const deleteUserFollowing = (currentUser, followingUsername) => {
-    const currentUserEmail = currentUser.fplEmail
-    usersDAO.deleteOneFollower(currentUserEmail, followingUsername)
-    return usersDAO.findUserFollowing(currentUserEmail)
-}
+  const currentUserEmail = currentUser.fplEmail;
+  usersDAO.deleteOneFollower(currentUserEmail, followingUsername);
+  return usersDAO.findUserFollowing(currentUserEmail);
+};
 
 const findUserFollowers = (currentUser) => {
-    const currentUserEmail = currentUser.fplEmail
-    return usersDAO.findUserFollowers(currentUserEmail)
-}
+  const currentUserEmail = currentUser.fplEmail;
+  return usersDAO.findUserFollowers(currentUserEmail);
+};
 
 const addUserFollower = (currentUser, followerUsername) => {
-    const currentUserEmail = currentUser.fplEmail
-    usersDAO.addOneFollower(currentUserEmail, followerUsername)
-    return usersDAO.findUserFollowers(currentUserEmail)
-}
+  const currentUserEmail = currentUser.fplEmail;
+  usersDAO.addOneFollower(currentUserEmail, followerUsername);
+  return usersDAO.findUserFollowers(currentUserEmail);
+};
 
 const deleteUserFollower = (currentUser, followerUsername) => {
-    const currentUserEmail = currentUser.fplEmail
-    usersDAO.deleteOneFollower(currentUserEmail, followerUsername)
-    return usersDAO.findUserFollowers(currentUserEmail)
-}
-
+  const currentUserEmail = currentUser.fplEmail;
+  usersDAO.deleteOneFollower(currentUserEmail, followerUsername);
+  return usersDAO.findUserFollowers(currentUserEmail);
+};
 
 module.exports = {
-    register,
-    login,
-    findAllUsers,
-    updateUser,
-    deleteUser,
-    findUserById,
-    findUserFollowing,
-    addUserFollowing,
-    deleteUserFollowing,
-    findUserFollowers,
-    addUserFollower,
-    deleteUserFollower
+  register,
+  login,
+  findAllUsers,
+  updateUser,
+  deleteUser,
+  findUserById,
+  findUserFollowing,
+  addUserFollowing,
+  deleteUserFollowing,
+  findUserFollowers,
+  addUserFollower,
+  deleteUserFollower,
 };

@@ -1,6 +1,7 @@
 const axios = require('axios');
 const configs = require('./api-configs');
 const teamService = require('./team-service');
+const usersDAO = require('../daos/users-dao');
 
 // parent to both
 
@@ -97,69 +98,83 @@ const findAllPlayers = () => {
     });
 };
 
-const findPlayerDetails = (playerId) => {
+const findPlayerDetails = (playerId, user) => {
   return axios(configs.baseConfig).then((response) => {
     let teams = response.data.teams;
+    // is this where find common players would be called?
+    // selectedBy = {}
+    return usersDAO
+      .findCommonPlayers(user)
+      .then(
+        (res) => res
+        // console.log('common player array:', res);
+      )
+      .then((commonPlayers) => {
+        return axios(configs.buildDetailsConfig(playerId)).then(
+          (playerDetails) => {
+            let details = {};
+            let seasonHistory = playerDetails.data.history_past;
+            let n = seasonHistory.length;
+            let recentSeasonHistory = seasonHistory.slice(n - 2, n);
+            let fixtureHistory = playerDetails.data.history;
+            n = fixtureHistory.length;
+            let recentFixtureHistory = playerDetails.data.history.slice(
+              n - 5,
+              n
+            );
+            let parsedFixtureHistory = [];
 
-    return axios(configs.buildDetailsConfig(playerId))
-      .then((playerDetails) => {
-        let details = {};
-        let seasonHistory = playerDetails.data.history_past;
-        let n = seasonHistory.length;
-        let recentSeasonHistory = seasonHistory.slice(n - 2, n);
-        let fixtureHistory = playerDetails.data.history;
-        n = fixtureHistory.length;
-        let recentFixtureHistory = playerDetails.data.history.slice(n - 5, n);
-        let parsedFixtureHistory = [];
+            // for setting fixture gameweek in map
+            n -= 4;
+            recentFixtureHistory.map((fixture) => {
+              // spf: singleParsedFixture
+              let spf = {};
+              spf.opponent_team = teams[fixture.opponent_team - 1].name;
+              // n referencing fixedHistory.length - 4
+              spf.gameweek = n++;
+              spf.score = fixture.total_points;
+              spf.minutes_played = fixture.minutes;
+              spf.was_home = fixture.was_home;
 
-        // for setting fixture gameweek in map
-        n -= 4;
-        recentFixtureHistory.map((fixture) => {
-          // spf: singleParsedFixture
-          let spf = {};
-          spf.opponent_team = teams[fixture.opponent_team - 1].name;
-          // n referencing fixedHistory.length - 4
-          spf.gameweek = n++;
-          spf.score = fixture.total_points;
-          spf.minutes_played = fixture.minutes;
-          spf.was_home = fixture.was_home;
+              // injury status for past fixtures not available
+              // TODO: keep track of injurty status going forward
 
-          // injury status for past fixtures not available
-          // TODO: keep track of injurty status going forward
+              parsedFixtureHistory.push(spf);
+            });
 
-          parsedFixtureHistory.push(spf);
-        });
+            // next 10 fixtures or remaining fixtures
+            let upcomingFixtures = playerDetails.data.fixtures;
+            let parsedUpcomingFixtures = [];
+            let i = 0;
+            while (upcomingFixtures[i] && i != 10) {
+              // spuf: singleParsedUpcomingFixture
+              let spuf = {};
+              spuf.event_name = upcomingFixtures[i].event_name;
+              spuf.team_h = teams[upcomingFixtures[i].team_h - 1].short_name;
+              spuf.team_a = teams[upcomingFixtures[i].team_a - 1].short_name;
+              spuf.is_home = upcomingFixtures[i].is_home;
+              spuf.difficulty = upcomingFixtures[i].difficulty;
+              parsedUpcomingFixtures.push(spuf);
+              i++;
+            }
 
-        // next 10 fixtures or remaining fixtures
-        let upcomingFixtures = playerDetails.data.fixtures;
-        let parsedUpcomingFixtures = [];
-        let i = 0;
-        while (upcomingFixtures[i] && i != 10) {
-          // spuf: singleParsedUpcomingFixture
-          let spuf = {};
-          spuf.event_name = upcomingFixtures[i].event_name;
-          spuf.team_h = teams[upcomingFixtures[i].team_h - 1].short_name;
-          spuf.team_a = teams[upcomingFixtures[i].team_a - 1].short_name;
-          spuf.is_home = upcomingFixtures[i].is_home;
-          spuf.difficulty = upcomingFixtures[i].difficulty;
-          parsedUpcomingFixtures.push(spuf);
-          i++;
-        }
+            // transfer activity from most recent gameweek
+            n = recentFixtureHistory.length;
+            let lastFixture = recentFixtureHistory[n - 1];
+            details.transfers = {
+              in: lastFixture.transfers_in,
+              out: lastFixture.transfers_out,
+              balance: lastFixture.transfers_balance,
+            };
 
-        // transfer activity from most recent gameweek
-        n = recentFixtureHistory.length;
-        let lastFixture = recentFixtureHistory[n - 1];
-        details.transfers = {
-          in: lastFixture.transfers_in,
-          out: lastFixture.transfers_out,
-          balance: lastFixture.transfers_balance,
-        };
+            details.season_history = recentSeasonHistory;
+            details.fixture_history = parsedFixtureHistory;
+            details.upcoming_fixtures = parsedUpcomingFixtures;
+            details.commonUsers = commonPlayers;
 
-        details.season_history = recentSeasonHistory;
-        details.fixture_history = parsedFixtureHistory;
-        details.upcoming_fixtures = parsedUpcomingFixtures;
-
-        return details;
+            return details;
+          }
+        );
       })
       .catch((error) => {
         console.log(error);

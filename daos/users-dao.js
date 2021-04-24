@@ -5,7 +5,8 @@ const createUser = (user) => {
 };
 
 const deleteUser = (user) => {
-  usersModel.remove({ username: user.username });
+  console.log('user email:', user.fplEmail);
+  usersModel.remove({ fplEmail: user.fplEmail });
 };
 
 const updateUser = (user, newUser) => {
@@ -34,57 +35,105 @@ const findUserByCredentials = (credentials) => {
   });
 };
 
+/**
+ *
+ * @param {*} userEmail
+ * @param {*} userTeam
+ */
+const saveUserTeam = async function (userEmail, userTeam) {
+  await usersModel.updateOne(
+    { fplEmail: userEmail },
+    { $set: { team: userTeam } }
+  );
+};
+
+/**
+ *
+ * @param {*} user
+ */
+const findCommonPlayers = (user) => {
+  return findUserFollowing(user.fplEmail).then((peopleFollowing) => {
+    let allShared = [];
+    // find and loop through documents of people user is following
+    for (followingEmail of peopleFollowing[0].userFollowing) {
+      findUserByEmail(followingEmail).then((personFollowing) => {
+        /*
+        find common players betwwen user's team and team of person 
+        they are following
+        */
+        let commonPlayers = [];
+        commonPlayers = user.team.filter((playerId) =>
+          personFollowing.team.includes(playerId)
+        );
+        // TODO: add something to distinguish accounts of user with same name
+        // TODO: could be user's team name
+        /*
+        put common player information in object with name of person user is following
+        */
+        let personName =
+          personFollowing.firstName + ' ' + personFollowing.lastName;
+        let shared = {};
+        shared.followingName = personName;
+        shared.followingEmail = personFollowing.fplEmail;
+        shared.players = commonPlayers;
+        allShared.push(shared);
+      });
+    }
+    return allShared;
+  });
+};
+
 const findUserFollowing = (fplEmail) => {
-    return usersModel.find({fplEmail: fplEmail},{_id: 0, userFollowing: 1})
-}
+  return usersModel.find({ fplEmail: fplEmail }, { _id: 0, userFollowing: 1 });
+};
 
-const addOneFollowing = (fplEmail, followingUsername) => {
-    return usersModel.updateOne(
-        {fplEmail: fplEmail},
-        {
-            $push: {
-                userFollowing: followingUsername
-            }
-        }
-    )
-}
+const addOneFollowing = async function (fplEmail, followingUsername) {
+  await usersModel.updateOne(
+    { fplEmail: fplEmail },
+    {
+      $push: {
+        userFollowing: followingUsername,
+      },
+    }
+  );
+};
 
-const deleteOneFollowing = (fplEmail, followingUsername) => {
-    return usersModel.updateOne(
-        {fplEmail: fplEmail},
-        {
-            $pull: {
-                userFollowing: followingUsername
-            }
-        }
-    )
-}
+const deleteOneFollowing = async function (fplEmail, followingUsername) {
+  await usersModel.updateOne(
+    { fplEmail: fplEmail },
+    {
+      $pull: {
+        userFollowing: followingUsername,
+      },
+    }
+  );
+};
 
 const findUserFollowers = (fplEmail) => {
-    return usersModel.find({fplEmail: fplEmail},{_id: 0, userFollowers: 1})
-}
+  return usersModel.find({ fplEmail: fplEmail }, { _id: 0, userFollowers: 1 });
+};
 
-const addOneFollower = (fplEmail, followerUsername) => {
-    return usersModel.updateOne(
-        {fplEmail: fplEmail},
-        {
-            $push: {
-                userFollower: followerUsername
-            }
-        }
-    )
-}
+const addOneFollower = async function (fplEmail, followerUsername) {
+  await usersModel.updateOne(
+    { fplEmail: fplEmail },
+    {
+      $push: {
+        userFollower: followerUsername,
+      },
+    }
+  );
+};
 
-const deleteOneFollower = (fplEmail, followerUsername) => {
-    return usersModel.updateOne(
-        {fplEmail: fplEmail},
-        {
-            $pull: {
-                userFollower: followerUsername
-            }
-        }
-    )
-}
+const deleteOneFollower = async function (fplEmail, followerUsername) {
+  await usersModel.updateOne(
+    { fplEmail: fplEmail },
+    {
+      $pull: {
+        userFollower: followerUsername,
+      },
+    }
+  );
+};
 
 module.exports = {
   findUserByUsername,
@@ -101,4 +150,6 @@ module.exports = {
   findUserFollowers,
   addOneFollower,
   deleteOneFollower,
+  saveUserTeam,
+  findCommonPlayers,
 };

@@ -6,7 +6,7 @@ const usersSchema = mongoose.Schema(
     role: { type: String, enum: ['ADMIN', 'USER'] },
     firstName: String,
     lastName: String,
-    team: [{ id: Number, name: String }],
+    team: [Number],
     userFollowing: [String],
     userFollowers: [String],
   },
