@@ -6,6 +6,9 @@ const mongodbPassword = process.env.mongodbAtlasPassword
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3001;
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const session = require('express-session')
 app.use(session({
@@ -19,10 +22,6 @@ const mongoose = require('mongoose');
 mongoose.connect(
     `mongodb+srv://${mongodbUsername}:${mongodbPassword}@cluster0.95dme.mongodb.net/codeleague`,
     {useNewUrlParser: true, useUnifiedTopology: true});
-
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');

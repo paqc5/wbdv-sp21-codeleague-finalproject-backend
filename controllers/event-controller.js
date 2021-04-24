@@ -16,7 +16,9 @@ module.exports = (app) => {
     };
 
     const findMatchesForEvent = (req, res) => {
-        eventService.findMatchesForEvent().then((result) => {
+        let eventId = req.params['eventId']
+        eventService.findMatchesForEvent(eventId).then((result) => {
+            console.log(result)
             res.send(result)
         });
     };

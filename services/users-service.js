@@ -1,39 +1,45 @@
-const usersDAO = require("../daos/users-dao")
+const usersDao = require("../daos/users-dao")
 
 const register = (newUser, res) => {
-    return usersDAO.findUserByUsername(newUser.username)
+    return usersDao.findUserByUsername(newUser.username)
         .then((user) => {
             if (user.length > 0) {
                 res.send(403)
             } else {
-                return usersDAO.createUser(newUser);
+                return usersDao.createUser(newUser);
             }
         })
 }
 
-const login = (credentials, res) => {
-    return usersDAO.findUserByCredentials(credentials)
+const login = (credentials) => {
+    return usersDao.findUserByCredentials(credentials)
         .then((actualUser) => {
             if (actualUser) {
-                return actualUser
+                if(actualUser.password === credentials.password) {
+                    return actualUser
+                } else {
+                    // Return -1 if credentials don't match
+                    return "-1"
+                }
             } else {
-                res.sendStatus(0)
+                // Return 0 if user not found in database
+                return "0"
             }
         })
 }
 
 const updateUser = (newUser, currentUser, res) => {
     if (newUser._id === currentUser._id || currentUser.role === "ADMIN") {
-        const user = usersDAO.findUserById(newUser._id)
-        return usersDAO.updateUser(user, newUser)
+        const user = usersDao.findUserById(newUser._id)
+        return usersDao.updateUser(user, newUser)
     } else {
         res.sendStatus(403)
     }
 }
 
-const deleteUser = (deleteUser, currentUser, res) => {
-    if (deleteUser._id === currentUser._id || currentUser.role === 'ADMIN') {
-        usersDAO.deleteUser(deleteUser)
+const deleteUser = (userToDelete, currentUser, res) => {
+    if (userToDelete._id === currentUser._id || currentUser.role === 'ADMIN') {
+        usersDao.deleteUser(userToDelete)
         res.sendStatus(1)
     } else {
         res.sendStatus(403)
@@ -42,48 +48,48 @@ const deleteUser = (deleteUser, currentUser, res) => {
 
 const findAllUsers = (user, res) => {
     if (user.role === 'ADMIN') {
-        return usersDAO.findAllUsers();
+        return usersDao.findAllUsers();
     } else {
         res.sendStatus(403)
     }
 }
 
 const findUserById = (userId) => {
-    return usersDAO.findUserById(userId)
+    return usersDao.findUserById(userId)
 }
 
 const findUserFollowing = (currentUser) => {
     const currentUserName = currentUser.username
-    return usersDAO.findUserFollowing(currentUserName)
+    return usersDao.findUserFollowing(currentUserName)
 }
 
 const addUserFollowing = (currentUser, followingUsername) => {
     const currentUserName = currentUser.username
-    usersDAO.addOneFollowing(currentUserName, followingUsername)
-    return usersDAO.findUserFollowing(currentUserName)
+    usersDao.addOneFollowing(currentUserName, followingUsername)
+    return usersDao.findUserFollowing(currentUserName)
 }
 
 const deleteUserFollowing = (currentUser, followingUsername) => {
     const currentUserName = currentUser.username
-    usersDAO.deleteOneFollower(currentUserName, followingUsername)
-    return usersDAO.findUserFollowing(currentUserName)
+    usersDao.deleteOneFollower(currentUserName, followingUsername)
+    return usersDao.findUserFollowing(currentUserName)
 }
 
 const findUserFollowers = (currentUser) => {
     const currentUserName = currentUser.username
-    return usersDAO.findUserFollowers(currentUserName)
+    return usersDao.findUserFollowers(currentUserName)
 }
 
 const addUserFollower = (currentUser, followerUsername) => {
     const currentUserName = currentUser.username
-    usersDAO.addOneFollower(currentUserName, followerUsername)
-    return usersDAO.findUserFollowers(currentUserName)
+    usersDao.addOneFollower(currentUserName, followerUsername)
+    return usersDao.findUserFollowers(currentUserName)
 }
 
 const deleteUserFollower = (currentUser, followerUsername) => {
     const currentUserName = currentUser.username
-    usersDAO.deleteOneFollower(currentUserName, followerUsername)
-    return usersDAO.findUserFollowers(currentUserName)
+    usersDao.deleteOneFollower(currentUserName, followerUsername)
+    return usersDao.findUserFollowers(currentUserName)
 }
 
 

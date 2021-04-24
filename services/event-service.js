@@ -1,34 +1,10 @@
 const axios = require('axios');
-const BASE_API_URL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
+const configs = require('./api-configs');
 const FIXTURES_API_URL = 'https://fantasy.premierleague.com/api/fixtures'
 const PROXY_API_URL = 'https://codeleague-cors-proxy.herokuapp.com/';
 
-let baseConfig = {
-  url: PROXY_API_URL,
-  method: 'GET',
-  headers: {
-    'target-url': BASE_API_URL,
-    'content-type': 'application/json',
-    'Cache-Control': 'no-cache',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-  }
-};
-
-let fixturesConfig = {
-  url: PROXY_API_URL,
-  method: 'GET',
-  headers: {
-    'target-url': FIXTURES_API_URL,
-    'content-type': 'application/json',
-    'Cache-Control': 'no-cache',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-  }
-}
-
 const findAllEvents = () => {
-  return axios(baseConfig)
+  return axios(configs.baseConfig)
     .then(response => response.data.events)
     .catch((error) => {
       console.log(error);
@@ -41,7 +17,7 @@ const findEventById = (eventId) =>
   )
 
 const findCurrentEvent = () => {
-  return axios(baseConfig)
+  return axios(configs.baseConfig)
     .then(response =>
       response.data.events.filter(event => event.is_next === true))
     .catch((error) => {
@@ -50,12 +26,11 @@ const findCurrentEvent = () => {
 }
 
 const findMatchesForEvent = (eventId) => {
-  axios.get(PROXY_API_URL, fixturesConfig)
-    .then(response => 
-      response.data.filter(event => event.event === eventId))
-        .catch((error) => {
-          console.log(error);
-        });
+  return axios(configs.fixturesConfig)
+    .then(response => response.data.filter(event => event.event == eventId))
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 const findEventAndMatches = () => {
@@ -63,7 +38,7 @@ const findEventAndMatches = () => {
   let matches = {}
 
   // Get Json object from statis API
-  return axios(baseConfig)
+  return axios(configs.baseConfig)
     .then(baseRs => {
 
       // Get the current event
@@ -75,7 +50,7 @@ const findEventAndMatches = () => {
 
       // TODO: explore using query parameter instead https://fantasy.premierleague.com/api/fixtures?event=31
       // Get Json object from fixture API
-      return axios(fixturesConfig)
+      return axios(configs.fixturesConfig)
         .then(fixRs => {
 
           // Get all the matches that matches the event id
@@ -118,5 +93,9 @@ const findEventAndMatches = () => {
 }
 
 module.exports = {
-  findAllEvents, findCurrentEvent, findEventById, findMatchesForEvent, findEventAndMatches
+  findAllEvents,
+  findCurrentEvent,
+  findEventById,
+  findMatchesForEvent,
+  findEventAndMatches
 }

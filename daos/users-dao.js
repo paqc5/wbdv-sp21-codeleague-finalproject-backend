@@ -26,9 +26,9 @@ const findUserById = (userId) => {
 }
 
 const findUserByCredentials = (credentials) => {
+    console.log(credentials)
     return usersModel.findOne({
-        username: credentials.username,
-        password: credentials.password
+        username: credentials.username
     })
 }
 
