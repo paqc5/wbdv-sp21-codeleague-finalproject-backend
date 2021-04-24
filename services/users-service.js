@@ -14,7 +14,7 @@ const register = (newUser, res) => {
       usersDAO.findUserByEmail(newUser.fplEmail).then((user) => {
         if (user) {
           return { registered: false, msg: 'user already exists' };
-          //   res.sendStatus(403);
+          // res.sendStatus(403);
         } else {
           usersDAO.createUser(newUser);
           return { registered: true, msg: 'user succesfully created' };
@@ -27,35 +27,7 @@ const register = (newUser, res) => {
     });
 };
 
-// const register = (newUser, res) => {
-//   return usersDAO.findUserByEmail(newUser.fplEmail).then((user) => {
-//     if (user) {
-//       res.send(403);
-//     } else {
-//       return usersDAO.createUser(newUser);
-//     }
-//   });
-// };
-
-/*what aspects do we still need
-need an object
-that will return the user
-and the user's team
-already checked if they had an fpl account when they registered
-so wehn they login
-just see if we have them in our database
-and then finde their team and return it along with their user details
-also start a session for them
-
-password must serve a purpose
-so check if they are a user first
-then try authenticate via fpl with their fpl email
-if fpl authentication fails
-then you know it's an invalid password problem
-*/
-
 const login = (credentials, res) => {
-  // console.log('login function');
   let cache = usersTeamService.cached();
   // if (cache) console.log('cachedPlayers from login:', cache[0]);
   // else {
@@ -70,9 +42,6 @@ const login = (credentials, res) => {
         .then((team) => {
           let teamToSave = team.map((player) => player[0].id);
           usersDAO.saveUserTeam(actualUser.fplEmail, teamToSave);
-          // usersDAO.findUserByEmail(actualUser.fplEmail).then((res) => {
-          //   console.log('user return', res);
-          // });
           actualUserInfo.team = team;
           return actualUserInfo;
         })
@@ -85,16 +54,6 @@ const login = (credentials, res) => {
     }
   });
 };
-
-// const login = (credentials, res) => {
-//   return usersDAO.findUserByCredentials(credentials).then((actualUser) => {
-//     if (actualUser) {
-//       return actualUser;
-//     } else {
-//       res.sendStatus(0);
-//     }
-//   });
-// };
 
 const updateUser = (newUser, currentUser, res) => {
   if (newUser._id === currentUser._id || currentUser.role === 'ADMIN') {

@@ -5,12 +5,11 @@ const createUser = (user) => {
 };
 
 const deleteUser = (user) => {
-  console.log('user email:', user.fplEmail);
   usersModel.remove({ fplEmail: user.fplEmail });
 };
 
 const updateUser = (user, newUser) => {
-  return usersModel.save({ username: user.username }, newUser);
+  return usersModel.save({ fplEmail: user.fplEmail }, newUser);
 };
 
 const findAllUsers = () => {
@@ -31,7 +30,7 @@ const findUserByEmail = (userEmail) => {
 
 const findUserByCredentials = (credentials) => {
   return usersModel.findOne({
-    fplUsername: credentials.fplEmail,
+    fplEmail: credentials.fplEmail,
   });
 };
 
