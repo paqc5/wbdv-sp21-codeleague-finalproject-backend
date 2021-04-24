@@ -1,44 +1,46 @@
-const usersModel = require("../models/users-model")
+const usersModel = require('../models/users-model');
 
 const createUser = (user) => {
-    return usersModel.create(user)
-}
+  return usersModel.create(user);
+};
 
 const deleteUser = (user) => {
-    usersModel.remove({username: user.username})
+  usersModel.remove({ username: user.username });
 };
 
 const updateUser = (user, newUser) => {
-    return usersModel.save({username: user.username}, newUser)
+  return usersModel.save({ username: user.username }, newUser);
 };
 
 const findAllUsers = () => {
-    return usersModel.find();
-}
+  return usersModel.find();
+};
 
 const findUserByUsername = (username) => {
-    return usersModel.find({username: username})
-}
+  return usersModel.find({ username: username });
+};
 
 const findUserById = (userId) => {
-    return usersModel
-        .findById(userId)
-}
+  return usersModel.findById(userId);
+};
+
+const findUserByEmail = (userEmail) => {
+  return usersModel.findOne({ fplEmail: userEmail });
+};
 
 const findUserByCredentials = (credentials) => {
-    console.log(credentials)
-    return usersModel.findOne({
-        username: credentials.username
-    })
+  return usersModel.findOne({
+    fplUsername: credentials.fplEmail,
+  });
+};
+
+const findUserFollowing = (fplEmail) => {
+    return usersModel.find({fplEmail: fplEmail},{_id: 0, userFollowing: 1})
 }
 
-const findUserFollowing = (username) => {
-    return usersModel.find({username: username},{_id: 0, userFollowing: 1})
-}
-
-const addOneFollowing = (username, followingUsername) => {
+const addOneFollowing = (fplEmail, followingUsername) => {
     return usersModel.updateOne(
-        {username: username},
+        {fplEmail: fplEmail},
         {
             $push: {
                 userFollowing: followingUsername
@@ -47,9 +49,9 @@ const addOneFollowing = (username, followingUsername) => {
     )
 }
 
-const deleteOneFollowing = (username, followingUsername) => {
+const deleteOneFollowing = (fplEmail, followingUsername) => {
     return usersModel.updateOne(
-        {username: username},
+        {fplEmail: fplEmail},
         {
             $pull: {
                 userFollowing: followingUsername
@@ -58,13 +60,13 @@ const deleteOneFollowing = (username, followingUsername) => {
     )
 }
 
-const findUserFollowers = (username) => {
-    return usersModel.find({username: username},{_id: 0, userFollowers: 1})
+const findUserFollowers = (fplEmail) => {
+    return usersModel.find({fplEmail: fplEmail},{_id: 0, userFollowers: 1})
 }
 
-const addOneFollower = (username, followerUsername) => {
+const addOneFollower = (fplEmail, followerUsername) => {
     return usersModel.updateOne(
-        {username: username},
+        {fplEmail: fplEmail},
         {
             $push: {
                 userFollower: followerUsername
@@ -73,9 +75,9 @@ const addOneFollower = (username, followerUsername) => {
     )
 }
 
-const deleteOneFollower = (username, followerUsername) => {
+const deleteOneFollower = (fplEmail, followerUsername) => {
     return usersModel.updateOne(
-        {username: username},
+        {fplEmail: fplEmail},
         {
             $pull: {
                 userFollower: followerUsername
@@ -85,17 +87,18 @@ const deleteOneFollower = (username, followerUsername) => {
 }
 
 module.exports = {
-    findUserByUsername,
-    findUserByCredentials,
-    createUser,
-    deleteUser,
-    updateUser,
-    findAllUsers,
-    findUserById,
-    findUserFollowing,
-    addOneFollowing,
-    deleteOneFollowing,
-    findUserFollowers,
-    addOneFollower,
-    deleteOneFollower,
-}
+  findUserByUsername,
+  findUserByCredentials,
+  findUserByEmail,
+  createUser,
+  deleteUser,
+  updateUser,
+  findAllUsers,
+  findUserById,
+  findUserFollowing,
+  addOneFollowing,
+  deleteOneFollowing,
+  findUserFollowers,
+  addOneFollower,
+  deleteOneFollower,
+};

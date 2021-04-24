@@ -1,95 +1,159 @@
-const usersDao = require("../daos/users-dao")
+const usersDAO = require('../daos/users-dao');
+const usersTeamService = require('../services/users-team-service');
 
 const register = (newUser, res) => {
-    return usersDao.findUserByUsername(newUser.username)
-        .then((user) => {
-            if (user.length > 0) {
-                res.send(403)
-            } else {
-                return usersDao.createUser(newUser);
-            }
-        })
-}
+  // check if they have an fpl account
 
-const login = (credentials) => {
-    return usersDao.findUserByCredentials(credentials)
-        .then((actualUser) => {
-            if (actualUser) {
-                if(actualUser.password === credentials.password) {
-                    return actualUser
-                } else {
-                    // Return -1 if credentials don't match
-                    return "-1"
-                }
-            } else {
-                // Return 0 if user not found in database
-                return "0"
-            }
+  return usersTeamService
+    .authenticate(newUser.fplEmail, newUser.fplPassword, res)
+    .catch((error) => {
+      throw 'authenticaiton failed';
+    })
+    .then((cookie) =>
+      // check if user has an account with us
+      usersDAO.findUserByEmail(newUser.fplEmail).then((user) => {
+        if (user) {
+          return { registered: false, msg: 'user already exists' };
+          //   res.sendStatus(403);
+        } else {
+          usersDAO.createUser(newUser);
+          return { registered: true, msg: 'user succesfully created' };
+            // res.sendStatus(200);
+        }
+      })
+    )
+    .catch((error) => {
+      return { registered: false, msg: 'user authentication failed' };
+    });
+};
+
+// const register = (newUser, res) => {
+//   return usersDAO.findUserByEmail(newUser.fplEmail).then((user) => {
+//     if (user) {
+//       res.send(403);
+//     } else {
+//       return usersDAO.createUser(newUser);
+//     }
+//   });
+// };
+
+/*what aspects do we still need
+need an object
+that will return the user
+and the user's team
+already checked if they had an fpl account when they registered
+so wehn they login
+just see if we have them in our database
+and then finde their team and return it along with their user details
+also start a session for them
+
+password must serve a purpose
+so check if they are a user first
+then try authenticate via fpl with their fpl email
+if fpl authentication fails
+then you know it's an invalid password problem
+*/
+
+const login = (credentials, res) => {
+  // console.log('login function');
+  let cache = usersTeamService.cached();
+  if (cache) console.log('cachedPlayers from login:', cache[0]);
+  else {
+    console.log('cachedPlayers from login:', cache);
+  }
+  return usersDAO.findUserByEmail(credentials.fplEmail).then((actualUser) => {
+    let actualUserInfo = {};
+    if (actualUser) {
+      actualUserInfo.savedData = actualUser;
+      return usersTeamService
+        .findUserTeam(actualUser.fplEmail, credentials.fplPassword)
+        .then((team) => {
+          actualUserInfo.team = team;
+          return actualUserInfo;
         })
-}
+        .catch((error) => {
+          return { loggedIn: false, msg: 'incorrect password' };
+        });
+    } else {
+      return { loggedIn: false, msg: 'not registered' };
+      //   res.sendStatus(403);
+    }
+  });
+};
+
+// const login = (credentials, res) => {
+//   return usersDAO.findUserByCredentials(credentials).then((actualUser) => {
+//     if (actualUser) {
+//       return actualUser;
+//     } else {
+//       res.sendStatus(0);
+//     }
+//   });
+// };
 
 const updateUser = (newUser, currentUser, res) => {
-    if (newUser._id === currentUser._id || currentUser.role === "ADMIN") {
-        const user = usersDao.findUserById(newUser._id)
-        return usersDao.updateUser(user, newUser)
-    } else {
-        res.sendStatus(403)
-    }
-}
+  if (newUser._id === currentUser._id || currentUser.role === 'ADMIN') {
+    const user = usersDAO.findUserById(newUser._id);
+    return usersDAO.updateUser(user, newUser);
+  } else {
+    res.sendStatus(403);
+  }
+};
 
 const deleteUser = (userToDelete, currentUser, res) => {
-    if (userToDelete._id === currentUser._id || currentUser.role === 'ADMIN') {
-        usersDao.deleteUser(userToDelete)
-        res.sendStatus(1)
-    } else {
-        res.sendStatus(403)
-    }
-}
+  // TODO: check logic
+  if (userToDelete._id === currentUser._id || currentUser.role === 'ADMIN') {
+    usersDAO.deleteUser(userToDelete);
+    res.send('1');
+  } else {
+    res.sendStatus(403);
+  }
+};
 
 const findAllUsers = (user, res) => {
-    if (user.role === 'ADMIN') {
-        return usersDao.findAllUsers();
-    } else {
-        res.sendStatus(403)
-    }
-}
+  if (user.role === 'ADMIN') {
+    return usersDAO.findAllUsers();
+  } else {
+    res.sendStatus(403);
+  }
+};
 
 const findUserById = (userId) => {
-    return usersDao.findUserById(userId)
-}
+  return usersDAO.findUserById(userId);
+};
 
 const findUserFollowing = (currentUser) => {
-    const currentUserName = currentUser.username
-    return usersDao.findUserFollowing(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    return usersDAO.findUserFollowing(currentUserEmail)
 }
 
 const addUserFollowing = (currentUser, followingUsername) => {
-    const currentUserName = currentUser.username
-    usersDao.addOneFollowing(currentUserName, followingUsername)
-    return usersDao.findUserFollowing(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    usersDAO.addOneFollowing(currentUserEmail, followingUsername)
+    return usersDAO.findUserFollowing(currentUserEmail)
 }
 
 const deleteUserFollowing = (currentUser, followingUsername) => {
-    const currentUserName = currentUser.username
-    usersDao.deleteOneFollower(currentUserName, followingUsername)
-    return usersDao.findUserFollowing(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    usersDAO.deleteOneFollower(currentUserEmail, followingUsername)
+    return usersDAO.findUserFollowing(currentUserEmail)
 }
 
 const findUserFollowers = (currentUser) => {
-    const currentUserName = currentUser.username
-    return usersDao.findUserFollowers(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    return usersDAO.findUserFollowers(currentUserEmail)
 }
 
 const addUserFollower = (currentUser, followerUsername) => {
-    const currentUserName = currentUser.username
-    usersDao.addOneFollower(currentUserName, followerUsername)
-    return usersDao.findUserFollowers(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    usersDAO.addOneFollower(currentUserEmail, followerUsername)
+    return usersDAO.findUserFollowers(currentUserEmail)
 }
 
 const deleteUserFollower = (currentUser, followerUsername) => {
-    const currentUserName = currentUser.username
-    usersDao.deleteOneFollower(currentUserName, followerUsername)
-    return usersDao.findUserFollowers(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    usersDAO.deleteOneFollower(currentUserEmail, followerUsername)
+    return usersDAO.findUserFollowers(currentUserEmail)
 }
 
 

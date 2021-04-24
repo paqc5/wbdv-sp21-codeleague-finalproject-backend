@@ -1,33 +1,38 @@
 const fpl = require('fpl-api');
 const playerService = require('../services/player-service');
+var cachedPlayers;
 
-// implement authenticate user separately
-// will use to log users into the site
-
-// test method
-const viewCookie = (userEmail, userPassword) => {
+const cached = () => cachedPlayers;
+/**
+ * Authenticate a user via the FPL API
+ * @param {*} userEmail
+ * @param {*} userPassword
+ * @param {*} res
+ */
+const authenticate = (userEmail, userPassword, res) => {
   return fpl
     .fetchSession(userEmail, userPassword)
     .then((cookie) => cookie)
     .catch((error) => {
-      // authentication note
-      let authNote = { authenticated: false, api_msg: error.message };
-      console.log(error);
-      return authNote;
+      throw 'authentication failed';
     });
 };
 
-// TODO: import cached players from player service
+/**
+ * Find a user's team
+ * @param {*} userEmail
+ * @param {*} userPassword
+ */
 const findUserTeam = (userEmail, userPassword) => {
-  //   console.log('players:', playerService.players);
+  if (cachedPlayers)
+    console.log('Team Service cachedPlayers:', cachedPlayers[0]);
+
   return fpl
     .fetchSession(userEmail, userPassword)
     .then((cookie) => {
-      console.log('cookie:', cookie);
-      return fpl.fetchCurrentUser(cookie).then((user) =>
-        // const user = res;
-        fpl.fetchMyTeam(cookie, user.player.entry)
-      );
+      return fpl
+        .fetchCurrentUser(cookie)
+        .then((user) => fpl.fetchMyTeam(cookie, user.player.entry));
     })
     .then((team) =>
       playerService.findAllPlayers().then((allPlayers) => {
@@ -36,20 +41,14 @@ const findUserTeam = (userEmail, userPassword) => {
             (singlePlayer) => singlePlayer.id === player.element
           )
         );
+        cachedPlayers = allPlayers;
         return userTeam;
       })
     );
 };
 
-function getUserTeam(fplEmail, fplPassword, managerId) {
-  return fpl.fetchSession(fplEmail, fplPassword).then((cookie) => {
-    //   console.log(cookie);
-    return fpl.fetchMyTeam(cookie, managerId);
-  });
-}
-
 module.exports = {
-  getUserTeam: getUserTeam,
-  findUserTeam: findUserTeam,
-  viewCookie: viewCookie,
+  findUserTeam,
+  authenticate,
+  cached,
 };
