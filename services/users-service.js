@@ -17,7 +17,7 @@ const login = (credentials, res) => {
             if (actualUser) {
                 return actualUser
             } else {
-                res.sendStatus(0)
+                res.send('0')
             }
         })
 }
@@ -34,7 +34,7 @@ const updateUser = (newUser, currentUser, res) => {
 const deleteUser = (deleteUser, currentUser, res) => {
     if (deleteUser._id === currentUser._id || currentUser.role === 'ADMIN') {
         usersDAO.deleteUser(deleteUser)
-        res.sendStatus(1)
+        res.send('1')
     } else {
         res.sendStatus(403)
     }
@@ -53,37 +53,37 @@ const findUserById = (userId) => {
 }
 
 const findUserFollowing = (currentUser) => {
-    const currentUserName = currentUser.username
-    return usersDAO.findUserFollowing(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    return usersDAO.findUserFollowing(currentUserEmail)
 }
 
 const addUserFollowing = (currentUser, followingUsername) => {
-    const currentUserName = currentUser.username
-    usersDAO.addOneFollowing(currentUserName, followingUsername)
-    return usersDAO.findUserFollowing(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    usersDAO.addOneFollowing(currentUserEmail, followingUsername)
+    return usersDAO.findUserFollowing(currentUserEmail)
 }
 
 const deleteUserFollowing = (currentUser, followingUsername) => {
-    const currentUserName = currentUser.username
-    usersDAO.deleteOneFollower(currentUserName, followingUsername)
-    return usersDAO.findUserFollowing(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    usersDAO.deleteOneFollower(currentUserEmail, followingUsername)
+    return usersDAO.findUserFollowing(currentUserEmail)
 }
 
 const findUserFollowers = (currentUser) => {
-    const currentUserName = currentUser.username
-    return usersDAO.findUserFollowers(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    return usersDAO.findUserFollowers(currentUserEmail)
 }
 
 const addUserFollower = (currentUser, followerUsername) => {
-    const currentUserName = currentUser.username
-    usersDAO.addOneFollower(currentUserName, followerUsername)
-    return usersDAO.findUserFollowers(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    usersDAO.addOneFollower(currentUserEmail, followerUsername)
+    return usersDAO.findUserFollowers(currentUserEmail)
 }
 
 const deleteUserFollower = (currentUser, followerUsername) => {
-    const currentUserName = currentUser.username
-    usersDAO.deleteOneFollower(currentUserName, followerUsername)
-    return usersDAO.findUserFollowers(currentUserName)
+    const currentUserEmail = currentUser.fplEmail
+    usersDAO.deleteOneFollower(currentUserEmail, followerUsername)
+    return usersDAO.findUserFollowers(currentUserEmail)
 }
 
 

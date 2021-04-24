@@ -32,13 +32,13 @@ const findUserByCredentials = (credentials) => {
     })
 }
 
-const findUserFollowing = (username) => {
-    return usersModel.find({username: username},{_id: 0, userFollowing: 1})
+const findUserFollowing = (fplEmail) => {
+    return usersModel.find({fplEmail: fplEmail},{_id: 0, userFollowing: 1})
 }
 
-const addOneFollowing = (username, followingUsername) => {
+const addOneFollowing = (fplEmail, followingUsername) => {
     return usersModel.updateOne(
-        {username: username},
+        {fplEmail: fplEmail},
         {
             $push: {
                 userFollowing: followingUsername
@@ -47,9 +47,9 @@ const addOneFollowing = (username, followingUsername) => {
     )
 }
 
-const deleteOneFollowing = (username, followingUsername) => {
+const deleteOneFollowing = (fplEmail, followingUsername) => {
     return usersModel.updateOne(
-        {username: username},
+        {fplEmail: fplEmail},
         {
             $pull: {
                 userFollowing: followingUsername
@@ -58,13 +58,13 @@ const deleteOneFollowing = (username, followingUsername) => {
     )
 }
 
-const findUserFollowers = (username) => {
-    return usersModel.find({username: username},{_id: 0, userFollowers: 1})
+const findUserFollowers = (fplEmail) => {
+    return usersModel.find({fplEmail: fplEmail},{_id: 0, userFollowers: 1})
 }
 
-const addOneFollower = (username, followerUsername) => {
+const addOneFollower = (fplEmail, followerUsername) => {
     return usersModel.updateOne(
-        {username: username},
+        {fplEmail: fplEmail},
         {
             $push: {
                 userFollower: followerUsername
@@ -73,9 +73,9 @@ const addOneFollower = (username, followerUsername) => {
     )
 }
 
-const deleteOneFollower = (username, followerUsername) => {
+const deleteOneFollower = (fplEmail, followerUsername) => {
     return usersModel.updateOne(
-        {username: username},
+        {fplEmail: fplEmail},
         {
             $pull: {
                 userFollower: followerUsername

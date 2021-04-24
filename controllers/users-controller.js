@@ -25,8 +25,9 @@ module.exports = (app) => {
         res.send(currentUser)
     }
 
+    // Change findById to findByUsername (Some privacy risks exist)
     const profileAfterLoggedIn = (req, res) => {
-        const userId = req.params['userId']
+        const userId = req.params['username']
         usersService.findUserById(userId)
             .then(user => {
                 return res.send(user)
@@ -114,7 +115,7 @@ module.exports = (app) => {
     }
 
     app.post("/api/users/profile", profile);
-    app.get("/api/users/profile/:userId", profileAfterLoggedIn);
+    app.get("/api/users/profile/:username", profileAfterLoggedIn);
     app.post("/api/users/register", register);
     app.post("/api/users/login", login);
     app.post('/api/users/logout', logout);
