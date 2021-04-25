@@ -75,11 +75,13 @@ const deleteUser = (deleteUser, currentUser, res) => {
 };
 
 const findAllUsers = (user, res) => {
-  if (user.role === 'ADMIN') {
-    return usersDAO.findAllUsers();
-  } else {
-    res.sendStatus(403);
-  }
+  // if (user.savedData.role === 'ADMIN') {
+  //   return usersDAO.findAllUsers();
+  // } else {
+  //   // not admin
+  //   return Promise.resolve('0');
+  // }
+  return usersDAO.findAllUsers();
 };
 
 const findUserById = (userId) => {
@@ -87,35 +89,35 @@ const findUserById = (userId) => {
 };
 
 const findUserFollowing = (currentUser) => {
-  const currentUserEmail = currentUser.fplEmail;
+  const currentUserEmail = currentUser.savedData.fplEmail;
   return usersDAO.findUserFollowing(currentUserEmail);
 };
 
-const addUserFollowing = (currentUser, followingUsername) => {
-  const currentUserEmail = currentUser.fplEmail;
-  usersDAO.addOneFollowing(currentUserEmail, followingUsername);
+const addUserFollowing = (currentUser, followingEmail) => {
+  const currentUserEmail = currentUser.savedData.fplEmail;
+  usersDAO.addOneFollowing(currentUserEmail, followingEmail);
   return usersDAO.findUserFollowing(currentUserEmail);
 };
 
 const deleteUserFollowing = (currentUser, followingUsername) => {
-  const currentUserEmail = currentUser.fplEmail;
+  const currentUserEmail = currentUser.savedData.fplEmail;
   usersDAO.deleteOneFollower(currentUserEmail, followingUsername);
   return usersDAO.findUserFollowing(currentUserEmail);
 };
 
 const findUserFollowers = (currentUser) => {
-  const currentUserEmail = currentUser.fplEmail;
+  const currentUserEmail = currentUser.savedData.fplEmail;
   return usersDAO.findUserFollowers(currentUserEmail);
 };
 
 const addUserFollower = (currentUser, followerUsername) => {
-  const currentUserEmail = currentUser.fplEmail;
+  const currentUserEmail = currentUser.savedData.fplEmail;
   usersDAO.addOneFollower(currentUserEmail, followerUsername);
   return usersDAO.findUserFollowers(currentUserEmail);
 };
 
 const deleteUserFollower = (currentUser, followerUsername) => {
-  const currentUserEmail = currentUser.fplEmail;
+  const currentUserEmail = currentUser.savedData.fplEmail;
   usersDAO.deleteOneFollower(currentUserEmail, followerUsername);
   return usersDAO.findUserFollowers(currentUserEmail);
 };

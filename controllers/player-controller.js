@@ -31,7 +31,6 @@ module.exports = (app) => {
   };
 
   const findPlayerPosition = (req, res) => {
-    // const playerId = parseInt(req.params['playerId']);
     const elementTypeId = parseInt(req.params['elementTypeId']);
     playerService
       .findPlayerPosition(elementTypeId)

@@ -23,7 +23,7 @@ module.exports = (app) => {
 
   // Change findById to findByUsername (Some privacy risks exist)
   const profileAfterLoggedIn = (req, res) => {
-    const userId = req.params['username'];
+    const userId = req.params['id'];
     usersService.findUserById(userId).then((user) => {
       return res.send(user);
     });
@@ -64,9 +64,9 @@ module.exports = (app) => {
 
   const addUserFollowing = (req, res) => {
     const currentUser = req.session['profile'];
-    const followingUsername = res.body;
+    const followingEmail = req.body.followingEmail;
     usersService
-      .addUserFollowing(currentUser, followingUsername)
+      .addUserFollowing(currentUser, followingEmail)
       .then((newUserFollowing) => {
         res.send(newUserFollowing);
       });
@@ -74,9 +74,9 @@ module.exports = (app) => {
 
   const deleteUserFollowing = (req, res) => {
     const currentUser = req.session['profile'];
-    const followingUsername = res.body;
+    const followingEmail = req.body.followingEmail;
     usersService
-      .deleteUserFollowing(currentUser, followingUsername)
+      .deleteUserFollowing(currentUser, followingEmail)
       .then((newUserFollowing) => {
         res.send(newUserFollowing);
       });
@@ -110,7 +110,7 @@ module.exports = (app) => {
   };
 
   app.post('/api/users/profile', profile);
-  app.get('/api/users/profile/:username', profileAfterLoggedIn);
+  app.get('/api/users/profile/:id', profileAfterLoggedIn);
   app.post('/api/users/register', register);
   app.post('/api/users/login', login);
   app.post('/api/users/logout', logout);
@@ -118,7 +118,7 @@ module.exports = (app) => {
   app.put('/api/users/update', updateUser);
   app.delete('api/users/delete', deleteUser);
   app.get('/api/users/following', findUserFollowing);
-  app.put('/api/users/following/add', addUserFollowing);
+  app.post('/api/users/following/add', addUserFollowing);
   app.put('/api/users/following/delete', deleteUserFollowing);
   app.get('/api/users/followers', findUserFollowers);
   app.put('/api/users/followers/add', addUserFollower);

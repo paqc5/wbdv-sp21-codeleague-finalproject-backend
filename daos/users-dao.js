@@ -83,6 +83,7 @@ const findCommonPlayers = (user) => {
 };
 
 const findUserFollowing = (fplEmail) => {
+  console.log("email:", fplEmail)
   return usersModel.find({ fplEmail: fplEmail }, { _id: 0, userFollowing: 1 });
 };
 

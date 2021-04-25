@@ -1,35 +1,10 @@
 const axios = require('axios');
-const BASE_API_URL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
-const FIXTURES_API_URL = 'https://fantasy.premierleague.com/api/fixtures';
+const configs = require('./api-configs');
 const PROXY_API_URL = 'https://codeleague-cors-proxy.herokuapp.com/';
 const userTeamService = require('./users-team-service');
 
-let baseConfig = {
-  url: PROXY_API_URL,
-  method: 'GET',
-  headers: {
-    'target-url': BASE_API_URL,
-    'content-type': 'application/json',
-    'Cache-Control': 'no-cache',
-    Pragma: 'no-cache',
-    Expires: '0',
-  },
-};
-
-let fixturesConfig = {
-  url: PROXY_API_URL,
-  method: 'GET',
-  headers: {
-    'target-url': FIXTURES_API_URL,
-    'content-type': 'application/json',
-    'Cache-Control': 'no-cache',
-    Pragma: 'no-cache',
-    Expires: '0',
-  },
-};
-
 const findAllEvents = () => {
-  return axios(baseConfig)
+  return axios(configs.baseConfig)
     .then((response) => response.data.events)
     .catch((error) => {
       console.log(error);
@@ -37,8 +12,6 @@ const findAllEvents = () => {
 };
 
 const findEventById = (eventId) => {
-  if (userTeamService.cachedPlayers)
-    console.log('cachedPlayers:', userTeamService.cachedPlayers[0]);
   return findAllEvents().then((res) =>
     res.filter((event) => event.id === eventId)
   );
@@ -55,7 +28,7 @@ const findCurrentEvent = () => {
 
 const findMatchesForEvent = (eventId) => {
   axios
-    .get(PROXY_API_URL, fixturesConfig)
+    .get(PROXY_API_URL, configs.fixturesConfig)
     .then((response) =>
       response.data.filter((event) => event.event === eventId)
     )
@@ -68,7 +41,7 @@ const findEventAndMatches = () => {
   let matches = {};
 
   // Get Json object from statis API
-  return axios(baseConfig)
+  return axios(configs.baseConfig)
     .then((baseRs) => {
       // Get the current event
       let rs = baseRs.data.events.filter((event) => event.is_next === true);
@@ -79,7 +52,7 @@ const findEventAndMatches = () => {
 
       // TODO: explore using query parameter instead https://fantasy.premierleague.com/api/fixtures?event=31
       // Get Json object from fixture API
-      return axios(fixturesConfig)
+      return axios(configs.fixturesConfig)
         .then((fixRs) => {
           // Get all the matches that matches the event id
           rs = fixRs.data.filter((event) => event.event === matches.event_id);
