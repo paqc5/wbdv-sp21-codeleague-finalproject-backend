@@ -76,9 +76,9 @@ module.exports = (app) => {
 
   const addUserFollowing = (req, res) => {
     const currentUser = req.session['profile'];
-    const followingUsername = res.body;
+    const followingEmail = req.body.followingEmail;
     usersService
-      .addUserFollowing(currentUser, followingUsername)
+      .addUserFollowing(currentUser, followingEmail)
       .then((newUserFollowing) => {
         res.send(newUserFollowing);
       });
@@ -86,9 +86,9 @@ module.exports = (app) => {
 
   const deleteUserFollowing = (req, res) => {
     const currentUser = req.session['profile'];
-    const followingUsername = res.body;
+    const followingEmail = req.body.followingEmail;
     usersService
-      .deleteUserFollowing(currentUser, followingUsername)
+      .deleteUserFollowing(currentUser, followingEmail)
       .then((newUserFollowing) => {
         res.send(newUserFollowing);
       });
@@ -140,7 +140,7 @@ module.exports = (app) => {
   app.put('/api/users/update', updateUser);
   app.delete('api/users/delete', deleteUser);
   app.get('/api/users/following', findUserFollowing);
-  app.put('/api/users/following/add', addUserFollowing);
+  app.post('/api/users/following/add', addUserFollowing);
   app.put('/api/users/following/delete', deleteUserFollowing);
   app.get('/api/users/followers', findUserFollowers);
   app.put('/api/users/followers/add', addUserFollower);

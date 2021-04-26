@@ -24,6 +24,11 @@ const authUser = (userEmail, userPassword) => {
  * @param {*} userPassword
  */
 const findUserTeam = (userEmail, userPassword) => {
+<<<<<<< HEAD
+=======
+  // if (cachedPlayers)
+  //   console.log('Team Service cachedPlayers:', cachedPlayers[0]);
+>>>>>>> 14753f3c5f37cfbc5323c86a0a6bee112b1d54f3
 
   return fpl
     .fetchSession(userEmail, userPassword)

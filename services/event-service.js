@@ -1,20 +1,30 @@
 const axios = require('axios');
 const configs = require('./api-configs');
+<<<<<<< HEAD
 const FIXTURES_API_URL = 'https://fantasy.premierleague.com/api/fixtures'
+=======
+>>>>>>> 14753f3c5f37cfbc5323c86a0a6bee112b1d54f3
 const PROXY_API_URL = 'https://codeleague-cors-proxy.herokuapp.com/';
 const userTeamService = require('./users-team-service');
 
 const findAllEvents = () => {
   return axios(configs.baseConfig)
+<<<<<<< HEAD
     .then(response => response.data.events)
+=======
+    .then((response) => response.data.events)
+>>>>>>> 14753f3c5f37cfbc5323c86a0a6bee112b1d54f3
     .catch((error) => {
       console.log(error);
     });
 };
 
 const findEventById = (eventId) => {
+<<<<<<< HEAD
   // if (userTeamService.cachedPlayers)
   //   console.log('cachedPlayers:', userTeamService.cachedPlayers[0]);
+=======
+>>>>>>> 14753f3c5f37cfbc5323c86a0a6bee112b1d54f3
   return findAllEvents().then((res) =>
     res.filter((event) => event.id === eventId)
   );
@@ -29,8 +39,16 @@ const findCurrentEvent = () => {
 };
 
 const findMatchesForEvent = (eventId) => {
+<<<<<<< HEAD
   return axios(configs.fixturesConfig)
     .then(response => response.data.filter(event => event.event == eventId))
+=======
+  axios
+    .get(PROXY_API_URL, configs.fixturesConfig)
+    .then((response) =>
+      response.data.filter((event) => event.event === eventId)
+    )
+>>>>>>> 14753f3c5f37cfbc5323c86a0a6bee112b1d54f3
     .catch((error) => {
       console.log(error);
     });
@@ -41,8 +59,12 @@ const findEventAndMatches = () => {
 
   // Get Json object from statis API
   return axios(configs.baseConfig)
+<<<<<<< HEAD
     .then(baseRs => {
 
+=======
+    .then((baseRs) => {
+>>>>>>> 14753f3c5f37cfbc5323c86a0a6bee112b1d54f3
       // Get the current event
       let rs = baseRs.data.events.filter((event) => event.is_next === true);
 
@@ -53,8 +75,12 @@ const findEventAndMatches = () => {
       // TODO: explore using query parameter instead https://fantasy.premierleague.com/api/fixtures?event=31
       // Get Json object from fixture API
       return axios(configs.fixturesConfig)
+<<<<<<< HEAD
         .then(fixRs => {
 
+=======
+        .then((fixRs) => {
+>>>>>>> 14753f3c5f37cfbc5323c86a0a6bee112b1d54f3
           // Get all the matches that matches the event id
           rs = fixRs.data.filter((event) => event.event === matches.event_id);
 

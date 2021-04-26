@@ -4,6 +4,9 @@ const usersService = require('../services/users-service');
 module.exports = (app) => {
 
   const findPlayerDetails = (req, res) => {
+    let currentUser = req.session['profile']
+    console.log("current user:", currentUser.savedData)
+    currentUser = currentUser.savedData 
     let playerId = req.params['playerId']
     playerService.findPlayerDetails(playerId)
         .then((playerDetails) => {
@@ -31,7 +34,6 @@ module.exports = (app) => {
   };
 
   const findPlayerPosition = (req, res) => {
-    // const playerId = parseInt(req.params['playerId']);
     const elementTypeId = parseInt(req.params['elementTypeId']);
     playerService
       .findPlayerPosition(elementTypeId)
