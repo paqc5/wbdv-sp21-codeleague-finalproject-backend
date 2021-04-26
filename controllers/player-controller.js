@@ -1,11 +1,14 @@
 const playerService = require('../services/player-service');
+const usersService = require('../services/users-service');
 
 module.exports = (app) => {
 
   const findPlayerDetails = (req, res) => {
     let playerId = req.params['playerId']
     playerService.findPlayerDetails(playerId)
-        .then((playerDetails) => res.send(playerDetails));
+        .then((playerDetails) => {
+          res.send(playerDetails)
+        });
   };
 
   const findAllPlayers = (req, res) => {

@@ -18,14 +18,12 @@ module.exports = (app) => {
     const findMatchesForEvent = (req, res) => {
         let eventId = req.params['eventId']
         eventService.findMatchesForEvent(eventId).then((result) => {
-            console.log(result)
             res.send(result)
         });
     };
 
     const findEventAndMatches = (req, res) => {
         eventService.findEventAndMatches().then((result) => {
-            console.log(result)
             res.send(result)
         });
     };

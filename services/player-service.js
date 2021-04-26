@@ -60,6 +60,7 @@ const findAllPlayers = () => {
             let team = teams[player.team - 1];
             spp.team_info = {
               id: team.id,
+              team_image_code: team.code,
               team_name: team.name,
               team_short_name: team.short_name,
             };
@@ -79,34 +80,6 @@ const findAllPlayers = () => {
           return allParsedPlayers;
         })
     })
-  // .then((players) => {
-  //   // current event id
-  //   let cei = ce[0].id;
-  //   return axios(configs.buildGameweekScoresConfig(cei - 1)).then(
-  //     (PlayerGameWeekStats) => {
-  //       let playerPerformance = PlayerGameWeekStats.data.elements;
-  //       for (let i = 0; i < playerPerformance.length; i++) {
-  //         players[i].total_points_previous =
-  //           playerPerformance[i].stats.total_points;
-  //       }
-  //       console.log(
-  //         'players score:',
-  //         // map through player
-  //         // filter stats for id that matches player id
-  //         // add attribute
-  //         playerPerformance[0].stats.total_points
-  //       );
-  //       return players;
-  //       // stats.map(player =>)
-  //       // players.map(player => {return {...player, total_points_previous: status.total_points}})
-  //       // return PlayerGameWeekScores.data.elements
-  //     }
-  //   );
-  //   // players.map(player => {return {...player, score: }})
-  // })
-  // .catch((error) => {
-  //   console.log(error);
-  // });
 };
 
 const findPlayerDetails = (playerId) => {
@@ -180,45 +153,6 @@ const findPlayerDetails = (playerId) => {
       });
   });
 };
-
-// find top 5 scoring players for each position
-// TODO: use Mongo
-const findTopFivePlayers = () => {
-  /*
-  this occurs before a user can look up a player
-  currently finding and parsing all players
-  but when does that happen
-  probably shouldn't happen only when a user logs in
-  we just need to have it ready to go
-  and stored
-  so should we have our player summary stored
-  cost and selected by can be in fluctuation
-  cost only updated once a day in fpl though
-  not sure about selected - probably the same
-  so we can have it stored
-  and only run it like once a day
-  sorting should be done in a database
-  
-  fact is, need to:
-  - sort all positions by highest scores
-
-  first step
-  - adding gameweek score to findAndParsePlayers
-
-  return dream team: https://fantasy.premierleague.com/api/dream-team/30/
-  https://fantasy.premierleague.com/api/event/31/live
-  live endpoint contains no element_type information
-  use id to find information in allParsedPlayers cache
-  
-  filter out for goalkeepers 
-  sort by gameweek points
-  return top 5
-  */
-};
-
-/*
-  why do I have to return the axios calls?
-*/
 
 const findPlayerById = (playerId) =>
   findAllPlayers().then((res) =>

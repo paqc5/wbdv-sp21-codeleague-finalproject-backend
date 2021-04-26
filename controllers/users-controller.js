@@ -1,31 +1,34 @@
 const usersService = require('../services/users-service');
 
 module.exports = (app) => {
+
   const register = (req, res) => {
-    const user = req.body;
-    usersService.register(user, res).then((newUser) => {
-      res.send(newUser);
-    });
-  };
+    const user = req.body
+    usersService.register(user)
+      .then(rs => {
+        res.send(rs)
+      })
+  }
 
   const login = (req, res) => {
     const credentials = req.body;
-    usersService.login(credentials).then((actualUser) => {
-      req.session['profile'] = actualUser;
-      res.send(actualUser);
-    });
+    usersService.login(credentials)
+      .then(actualUser => {
+        res.send(actualUser)
+      });
   };
 
   const profile = (req, res) => {
-    const currentUser = req.session['profile'];
-    res.send(currentUser);
+    const currentUser = req.session['profile']
+    res.send(currentUser)
   };
 
   // Change findById to findByUsername (Some privacy risks exist)
-  const profileAfterLoggedIn = (req, res) => {
-    const userId = req.params['username'];
-    usersService.findUserById(userId).then((user) => {
-      return res.send(user);
+  const findUserProfile = (req, res) => {
+    const username = req.params.username
+    usersService.findUserByUsername(username)
+    .then((user) => {
+      res.send(user);
     });
   };
 
@@ -37,8 +40,9 @@ module.exports = (app) => {
   const updateUser = (req, res) => {
     const newUser = req.body;
     const currentUser = req.session['profile'];
-    usersService.updateUser(newUser, currentUser, res).then((updatedUser) => {
-      res.send(updatedUser);
+    usersService.updateUser(newUser, currentUser)
+    .then((updatedUser) => {
+      res.send(`${updatedUser.ok}`);
     });
   };
 
@@ -53,6 +57,14 @@ module.exports = (app) => {
     usersService.findAllUsers(user, res).then((users) => {
       res.send(users);
     });
+  };
+
+  const findUserByName = (req, res) => {
+    let firstname =
+      req.query.firstname === undefined ? '' : req.query.firstname;
+    let lastname = req.query.lastname === undefined ? '' : req.query.lastname;
+    usersService.findUserByName(firstname, lastname)
+      .then((result) => res.send(result));
   };
 
   const findUserFollowing = (req, res) => {
@@ -88,6 +100,14 @@ module.exports = (app) => {
       res.send(userFollower);
     });
   };
+  const findUserById = (req, res) => {
+    const id = req.params['id'];
+    console.log(id)
+    usersService.findUserById(id)
+    .then(response => {
+      res.send(response.userTeam);
+    });
+  };
 
   const addUserFollower = (req, res) => {
     const currentUser = req.session['profile'];
@@ -109,12 +129,14 @@ module.exports = (app) => {
       });
   };
 
+  app.get('/api/team/:id', findUserById);
   app.post('/api/users/profile', profile);
-  app.get('/api/users/profile/:username', profileAfterLoggedIn);
+  app.get('/api/users/profile/:username', findUserProfile);
   app.post('/api/users/register', register);
   app.post('/api/users/login', login);
   app.post('/api/users/logout', logout);
   app.get('/api/users', findAllUsers);
+  app.get('/api/search/users', findUserByName);
   app.put('/api/users/update', updateUser);
   app.delete('api/users/delete', deleteUser);
   app.get('/api/users/following', findUserFollowing);

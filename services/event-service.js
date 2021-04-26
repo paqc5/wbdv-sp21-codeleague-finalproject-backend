@@ -13,8 +13,8 @@ const findAllEvents = () => {
 };
 
 const findEventById = (eventId) => {
-  if (userTeamService.cachedPlayers)
-    console.log('cachedPlayers:', userTeamService.cachedPlayers[0]);
+  // if (userTeamService.cachedPlayers)
+  //   console.log('cachedPlayers:', userTeamService.cachedPlayers[0]);
   return findAllEvents().then((res) =>
     res.filter((event) => event.id === eventId)
   );

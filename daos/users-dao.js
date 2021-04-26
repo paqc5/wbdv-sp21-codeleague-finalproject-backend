@@ -1,16 +1,20 @@
 const usersModel = require('../models/users-model');
 
 const createUser = (user) => {
-  return usersModel.create(user);
+  return usersModel.create(user) 
 };
 
 const deleteUser = (user) => {
   usersModel.remove({ username: user.username });
 };
 
-const updateUser = (user, newUser) => {
-  return usersModel.save({ username: user.username }, newUser);
-};
+const updateUser = (newUser) => {
+  return usersModel.updateOne({ fplEmail: newUser.fplEmail }, newUser);
+}
+
+const updateUserTeam = (userId, userTeam) => {
+  return usersModel.updateOne({_id:userId}, {$set: {userTeam: userTeam}})
+}
 
 const findAllUsers = () => {
   return usersModel.find();
@@ -93,6 +97,7 @@ module.exports = {
   createUser,
   deleteUser,
   updateUser,
+  updateUserTeam,
   findAllUsers,
   findUserById,
   findUserFollowing,
