@@ -1,4 +1,5 @@
 const usersModel = require('../models/users-model');
+const playersModel = require('../models/players-model');
 
 const createUser = (user) => {
   return usersModel.create(user) 
@@ -54,36 +55,8 @@ const saveUserTeam = async function (userEmail, userTeam) {
  *
  * @param {*} user
  */
-const findCommonPlayers = (user) => {
-  return findUserFollowing(user.fplEmail).then((peopleFollowing) => {
-    let allShared = [];
-    // find and loop through documents of people user is following
-    for (let followingEmail of peopleFollowing[0].userFollowing) {
-      findUserByEmail(followingEmail).then((personFollowing) => {
-        /*
-        find common players betwwen user's team and team of person 
-        they are following
-        */
-        let commonPlayers = [];
-        commonPlayers = user.team.filter((playerId) =>
-          personFollowing.team.includes(playerId)
-        );
-        // TODO: add something to distinguish accounts of user with same name
-        // TODO: could be user's team name
-        /*
-        put common player information in object with name of person user is following
-        */
-        let personName =
-          personFollowing.firstName + ' ' + personFollowing.lastName;
-        let shared = {};
-        shared.followingName = personName;
-        shared.followingEmail = personFollowing.fplEmail;
-        shared.players = commonPlayers;
-        allShared.push(shared);
-      });
-    }
-    return allShared;
-  });
+const findCommonPlayers = (playerId) => {
+  return playersModel.findOne({player_id: playerId})
 };
 
 const findUserFollowing = (fplEmail) => {

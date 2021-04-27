@@ -39,8 +39,7 @@ module.exports = (app) => {
 
   const updateUser = (req, res) => {
     const newUser = req.body;
-    const currentUser = req.session['profile'];
-    usersService.updateUser(newUser, currentUser)
+    usersService.updateUser(newUser, newUser)
     .then((updatedUser) => {
       res.send(`${updatedUser.ok}`);
     });
@@ -48,13 +47,13 @@ module.exports = (app) => {
 
   const deleteUser = (req, res) => {
     const userToDelete = req.body;
-    const currentUser = req.session['profile'];
     usersService.deleteUser(currentUser, userToDelete, res);
   };
 
   const findAllUsers = (req, res) => {
-    const user = req.session['profile'];
-    usersService.findAllUsers(user, res).then((users) => {
+    const user = req.body
+    usersService.findAllUsers(user)
+    .then((users) => {
       res.send(users);
     });
   };
@@ -135,8 +134,8 @@ module.exports = (app) => {
   app.post('/api/users/register', register);
   app.post('/api/users/login', login);
   app.post('/api/users/logout', logout);
-  app.get('/api/users', findAllUsers);
-  app.get('/api/search/users', findUserByName);
+  app.post('/api/users', findAllUsers);
+  app.get('/api/profile/search/users', findUserByName);
   app.put('/api/users/update', updateUser);
   app.delete('api/users/delete', deleteUser);
   app.get('/api/users/following', findUserFollowing);

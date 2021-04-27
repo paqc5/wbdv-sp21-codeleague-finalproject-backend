@@ -4,9 +4,6 @@ const usersService = require('../services/users-service');
 module.exports = (app) => {
 
   const findPlayerDetails = (req, res) => {
-    let currentUser = req.session['profile']
-    console.log("current user:", currentUser.savedData)
-    currentUser = currentUser.savedData 
     let playerId = req.params['playerId']
     playerService.findPlayerDetails(playerId)
         .then((playerDetails) => {
