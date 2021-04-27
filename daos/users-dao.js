@@ -60,12 +60,11 @@ const findCommonPlayers = (playerId) => {
 };
 
 const findUserFollowing = (fplEmail) => {
-  console.log("email:", fplEmail)
   return usersModel.find({ fplEmail: fplEmail }, { _id: 0, userFollowing: 1 });
 };
 
-const addOneFollowing = async function (fplEmail, followingUsername) {
-  await usersModel.updateOne(
+const addOneFollowing = (fplEmail, followingUsername) => {
+  return usersModel.updateOne(
     { fplEmail: fplEmail },
     {
       $push: {
@@ -75,38 +74,38 @@ const addOneFollowing = async function (fplEmail, followingUsername) {
   );
 };
 
-const deleteOneFollowing = async function (fplEmail, followingUsername) {
-  await usersModel.updateOne(
+const deleteOneFollowing = (fplEmail, followingUsername) => {
+  return usersModel.updateOne(
     { fplEmail: fplEmail },
     {
       $pull: {
         userFollowing: followingUsername,
       },
     }
-  );
-};
+  )
+}
 
 const findUserFollowers = (fplEmail) => {
   return usersModel.find({ fplEmail: fplEmail }, { _id: 0, userFollowers: 1 });
 };
 
-const addOneFollower = async function (fplEmail, followerUsername) {
-  await usersModel.updateOne(
+const addOneFollower = (fplEmail, followerUsername) => {
+  return usersModel.updateOne(
     { fplEmail: fplEmail },
     {
       $push: {
-        userFollower: followerUsername,
+        userFollowers: followerUsername,
       },
     }
-  );
-};
+  )
+}
 
-const deleteOneFollower = async function (fplEmail, followerUsername) {
-  await usersModel.updateOne(
+const deleteOneFollower = (fplEmail, followerUsername) => {
+  return usersModel.updateOne(
     { fplEmail: fplEmail },
     {
       $pull: {
-        userFollower: followerUsername,
+        userFollowers: followerUsername,
       },
     }
   );

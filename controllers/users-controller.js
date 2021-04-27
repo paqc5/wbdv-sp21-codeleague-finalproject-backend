@@ -53,9 +53,9 @@ module.exports = (app) => {
   const findAllUsers = (req, res) => {
     const user = req.body
     usersService.findAllUsers(user)
-    .then((users) => {
+    .then(users => {
       res.send(users);
-    });
+    })
   };
 
   const findUserByName = (req, res) => {
@@ -63,45 +63,64 @@ module.exports = (app) => {
       req.query.firstname === undefined ? '' : req.query.firstname;
     let lastname = req.query.lastname === undefined ? '' : req.query.lastname;
     usersService.findUserByName(firstname, lastname)
-      .then((result) => res.send(result));
+      .then((result) => {
+        res.send(result)
+      });
   };
 
   const findUserFollowing = (req, res) => {
-    const currentUser = req.session['profile'];
+    const currentUser = req.body
     usersService.findUserFollowing(currentUser).then((userFollowing) => {
       res.send(userFollowing);
     });
   };
 
   const addUserFollowing = (req, res) => {
-    const currentUser = req.session['profile'];
-    const followingEmail = req.body.followingEmail;
-    usersService
-      .addUserFollowing(currentUser, followingEmail)
+    const info = req.body
+    usersService.addUserFollowing(info.user, info.username)
       .then((newUserFollowing) => {
         res.send(newUserFollowing);
+        if(newUserFollowing) {
+          usersService.findUserByUsername(info.username)
+            .then(rs => {
+              const followerUsername = info.user.split('@')
+              const userEmail = rs[0].fplEmail
+              addUserFollower({
+                body: { user: userEmail, username: followerUsername[0]}
+              })
+            })
+        }
       });
   };
 
   const deleteUserFollowing = (req, res) => {
-    const currentUser = req.session['profile'];
-    const followingEmail = req.body.followingEmail;
+    const info = req.body
     usersService
-      .deleteUserFollowing(currentUser, followingEmail)
-      .then((newUserFollowing) => {
-        res.send(newUserFollowing);
+      .deleteUserFollowing(info.user, info.username)
+      .then((response) => {
+        res.send(response)
+        if(response) {
+          usersService.findUserByUsername(info.username)
+            .then(rs => {
+              const followerUsername = info.user.split('@')
+              const userEmail = rs[0].fplEmail
+              deleteUserFollower({
+                body: { user: userEmail, username: followerUsername[0] }
+              })
+            })
+        }
       });
   };
 
   const findUserFollowers = (req, res) => {
-    const currentUser = req.session['profile'];
-    usersService.findUserFollowers(currentUser).then((userFollower) => {
+    const currentUser = req.body
+    usersService.findUserFollowers(currentUser)
+    .then((userFollower) => {
       res.send(userFollower);
     });
   };
   const findUserById = (req, res) => {
     const id = req.params['id'];
-    console.log(id)
     usersService.findUserById(id)
     .then(response => {
       res.send(response.userTeam);
@@ -109,22 +128,18 @@ module.exports = (app) => {
   };
 
   const addUserFollower = (req, res) => {
-    const currentUser = req.session['profile'];
-    const followerUsername = res.body;
-    usersService
-      .addUserFollower(currentUser, followerUsername)
+    const info = req.body
+    usersService.addUserFollower(info.user, info.username)
       .then((newUserFollower) => {
-        res.send(newUserFollower);
+        console.log(newUserFollower)
       });
   };
 
   const deleteUserFollower = (req, res) => {
-    const currentUser = req.session['profile'];
-    const followerUsername = res.body;
-    usersService
-      .deleteUserFollower(currentUser, followerUsername)
+    const info = req.body
+    usersService.deleteUserFollower(info.user, info.username)
       .then((newUserFollower) => {
-        res.send(newUserFollower);
+        console.log(newUserFollower)
       });
   };
 
@@ -135,13 +150,13 @@ module.exports = (app) => {
   app.post('/api/users/login', login);
   app.post('/api/users/logout', logout);
   app.post('/api/users', findAllUsers);
-  app.get('/api/profile/search/users', findUserByName);
+  app.get('/api/search/users', findUserByName);
   app.put('/api/users/update', updateUser);
   app.delete('api/users/delete', deleteUser);
-  app.get('/api/users/following', findUserFollowing);
+  app.post('/api/users/following', findUserFollowing);
   app.post('/api/users/following/add', addUserFollowing);
   app.put('/api/users/following/delete', deleteUserFollowing);
-  app.get('/api/users/followers', findUserFollowers);
+  app.post('/api/users/followers', findUserFollowers);
   app.put('/api/users/followers/add', addUserFollower);
   app.put('/api/users/followers/delete', deleteUserFollower);
 };

@@ -161,7 +161,12 @@ const findPlayerDetails = (playerId) => {
 
         return usersDAO.findCommonPlayers(playerId)
           .then(common => {
-            details.common_users = common.users
+            if(common) {
+              details.common_users = common.users
+            } else {
+              details.common_users = ["None"]
+            }
+            
             return details;
           })
         

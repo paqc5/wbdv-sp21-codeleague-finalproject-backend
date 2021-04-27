@@ -44,7 +44,6 @@ const register = (newUser) => {
       if (response === null) {
         return authUser(newUser.fplEmail, newUser.fplPassword)
           .then(cookie => {
-
             if (cookie) {
               // If user authenticated, then create the account
               return usersDao.createUser(newUser)
@@ -59,11 +58,15 @@ const register = (newUser) => {
                         .then(rs => "200")
 
                     })
-
                 })
             }
           }).catch((error) => {
-            return "404"
+            if (error) {
+              return "404"
+            } else {
+              return "200"
+            }
+            
           })
       } else {
         return "409"
@@ -119,7 +122,7 @@ const deleteUser = (userToDelete, currentUser, res) => {
 
 const findAllUsers = (user) => {
   if (user.role === 'ADMIN') {
-    return usersDao.findAllUsers();
+    return usersDao.findAllUsers()
   } else {
     return "403";
   }
@@ -127,8 +130,8 @@ const findAllUsers = (user) => {
 
 const findUserByName = (inputNameOne, inputNameTwo) => {
   return findAllUsers({ role: 'ADMIN' })
-    .then((res) =>
-      res.filter((user) => {
+    .then(res => {
+      return res.filter((user) => {
         let firstName =
           user.firstName !== undefined ? user.firstName.toLowerCase() : '';
         let lastName =
@@ -147,6 +150,7 @@ const findUserByName = (inputNameOne, inputNameTwo) => {
           return false;
         }
       })
+    }
     );
 };
 
@@ -162,16 +166,12 @@ const findUserFollowing = (currentUser) => {
   return usersDao.findUserFollowing(currentUserEmail)
 }
 
-const addUserFollowing = (currentUser, followingUsername) => {
-  const currentUserEmail = currentUser.fplEmail
-  usersDao.addOneFollowing(currentUserEmail, followingUsername)
-  return usersDao.findUserFollowing(currentUserEmail)
+const addUserFollowing = (currentUserEmail, followingUsername) => {
+  return usersDao.addOneFollowing(currentUserEmail, followingUsername)
 }
 
 const deleteUserFollowing = (currentUser, followingUsername) => {
-  const currentUserEmail = currentUser.fplEmail
-  usersDao.deleteOneFollower(currentUserEmail, followingUsername)
-  return usersDao.findUserFollowing(currentUserEmail)
+  return usersDao.deleteOneFollowing(currentUser, followingUsername)
 }
 
 const findUserFollowers = (currentUser) => {
@@ -180,15 +180,11 @@ const findUserFollowers = (currentUser) => {
 }
 
 const addUserFollower = (currentUser, followerUsername) => {
-  const currentUserEmail = currentUser.fplEmail
-  usersDao.addOneFollower(currentUserEmail, followerUsername)
-  return usersDao.findUserFollowers(currentUserEmail)
+  return usersDao.addOneFollower(currentUser, followerUsername)
 }
 
 const deleteUserFollower = (currentUser, followerUsername) => {
-  const currentUserEmail = currentUser.fplEmail
-  usersDao.deleteOneFollower(currentUserEmail, followerUsername)
-  return usersDao.findUserFollowers(currentUserEmail)
+  return usersDao.deleteOneFollower(currentUser, followerUsername)
 }
 
 

@@ -6,11 +6,9 @@ module.exports = (app) => {
         let teams = teamService.findAllTeams();
         if (teams instanceof Promise) {
           teams.then((result) => {
-            console.log('teams if triggered');
             res.send(result);
           });
         } else {
-          console.log('teams else triggered');
           res.send(teams);
         }
     };

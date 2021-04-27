@@ -25,7 +25,7 @@ mongoose.connect(
     {useNewUrlParser: true, useUnifiedTopology: true});
 
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', herokuLink);
+  res.header('Access-Control-Allow-Origin', `${herokuLink}`);
   res.header(
     'Access-Control-Allow-Headers',
     'Content-Type, X-Requested-With, Origin'
