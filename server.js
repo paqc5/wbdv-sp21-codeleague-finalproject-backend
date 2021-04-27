@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const mongodbUsername = process.env.mongodbAtlasUsername
 const mongodbPassword = process.env.mongodbAtlasPassword
+const herokuLink = process.env.herokuLink
 
 const express = require('express');
 const app = express();
@@ -24,7 +25,7 @@ mongoose.connect(
     {useNewUrlParser: true, useUnifiedTopology: true});
 
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Origin', herokuLink);
   res.header(
     'Access-Control-Allow-Headers',
     'Content-Type, X-Requested-With, Origin'
