@@ -15,7 +15,6 @@ module.exports = (app) => {
     const credentials = req.body;
     usersService.login(credentials)
       .then(actualUser => {
-        console.log(actualUser)
         res.send(actualUser)
       });
   };

@@ -87,14 +87,11 @@ const login = (credentials) => {
         return authUser(credentials.fplEmail, credentials.fplPassword)
           .then(cookie => {
 
+              
             // If user authenticated, then update team and login
             if (cookie) {
               return getUserTeam(credentials.fplEmail, credentials.fplPassword)
                 .then(team => {
-
-                  Object.values(team).forEach(entry => {
-                    entry.map(player => addUserToPlayer(player.id, createdUser.username))
-                  })
 
                   // Storage the team in the database
                   return updateUserTeam(user._id, team)
