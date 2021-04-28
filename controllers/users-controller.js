@@ -6,6 +6,7 @@ module.exports = (app) => {
     const user = req.body
     usersService.register(user)
       .then(rs => {
+        console.log(rs)
         res.send(rs)
       })
   }
@@ -14,6 +15,7 @@ module.exports = (app) => {
     const credentials = req.body;
     usersService.login(credentials)
       .then(actualUser => {
+        console.log(actualUser)
         res.send(actualUser)
       });
   };

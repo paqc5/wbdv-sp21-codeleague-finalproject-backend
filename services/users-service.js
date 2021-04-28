@@ -53,6 +53,10 @@ const register = (newUser) => {
                   return getUserTeam(newUser.fplEmail, newUser.fplPassword)
                     .then(team => {
 
+                      Object.values(team).forEach(entry => {
+                        entry.map(player => addUserToPlayer(player.id, createdUser.username))
+                      })
+
                       // Storage the team in the database
                       return updateUserTeam(createdUser._id, team)
                         .then(rs => "200")
@@ -87,6 +91,10 @@ const login = (credentials) => {
             if (cookie) {
               return getUserTeam(credentials.fplEmail, credentials.fplPassword)
                 .then(team => {
+
+                  Object.values(team).forEach(entry => {
+                    entry.map(player => addUserToPlayer(player.id, createdUser.username))
+                  })
 
                   // Storage the team in the database
                   return updateUserTeam(user._id, team)
@@ -186,6 +194,9 @@ const addUserFollower = (currentUser, followerUsername) => {
 const deleteUserFollower = (currentUser, followerUsername) => {
   return usersDao.deleteOneFollower(currentUser, followerUsername)
 }
+const addUserToPlayer = (playerId, username) => {
+  return usersDao.addUserToPlayer(playerId, username)
+}
 
 
 module.exports = {
@@ -203,5 +214,6 @@ module.exports = {
   findUserFollowers,
   addUserFollower,
   deleteUserFollower,
-  findUserByUsername
+  findUserByUsername,
+  addUserToPlayer
 };

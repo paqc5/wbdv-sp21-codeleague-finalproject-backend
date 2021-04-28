@@ -2,7 +2,7 @@ const usersModel = require('../models/users-model');
 const playersModel = require('../models/players-model');
 
 const createUser = (user) => {
-  return usersModel.create(user) 
+  return usersModel.create(user)
 };
 
 const deleteUser = (user) => {
@@ -14,7 +14,7 @@ const updateUser = (newUser) => {
 }
 
 const updateUserTeam = (userId, userTeam) => {
-  return usersModel.updateOne({_id:userId}, {$set: {userTeam: userTeam}})
+  return usersModel.updateOne({ _id: userId }, { $set: { userTeam: userTeam } })
 }
 
 const findAllUsers = () => {
@@ -27,6 +27,9 @@ const findUserByUsername = (username) => {
 
 const findUserById = (userId) => {
   return usersModel.findById(userId);
+};
+const findPlayerById = (playerId) => {
+  return playersModel.findOne({player_id: playerId});
 };
 
 const findUserByEmail = (userEmail) => {
@@ -56,7 +59,23 @@ const saveUserTeam = async function (userEmail, userTeam) {
  * @param {*} user
  */
 const findCommonPlayers = (playerId) => {
-  return playersModel.findOne({player_id: playerId})
+  return playersModel.findOne({ player_id: playerId })
+};
+const addUserToPlayer = (playerId, username) => {
+  findPlayerById(playerId)
+    .then(res => {
+      if (res) {
+        return playersModel.updateOne({ player_id: playerId }, {
+          $push: {
+            users: username,
+          },
+        })
+      } else {
+        return playersModel
+        .create({ player_id: playerId, users: [`${username}`]})
+      }
+    })
+
 };
 
 const findUserFollowing = (fplEmail) => {
@@ -129,4 +148,5 @@ module.exports = {
   deleteOneFollower,
   saveUserTeam,
   findCommonPlayers,
+  addUserToPlayer
 };
