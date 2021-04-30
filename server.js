@@ -3,6 +3,7 @@ require('dotenv').config()
 const mongodbUsername = process.env.mongodbAtlasUsername
 const mongodbPassword = process.env.mongodbAtlasPassword
 
+console.log("username:", process.env.mongodbAtlasUsername)
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3001;
