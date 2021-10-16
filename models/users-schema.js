@@ -2,11 +2,17 @@ const mongoose = require('mongoose');
 
 const usersSchema = mongoose.Schema(
   {
+    username: String,
     fplEmail: String,
     role: { type: String, enum: ['ADMIN', 'USER'] },
     firstName: String,
     lastName: String,
-    team: [Number],
+    userTeam: {
+      Goalkeeper: [Object],
+      Defender: [Object],
+      Midfielder: [Object],
+      Forward: [Object]
+    },
     userFollowing: [String],
     userFollowers: [String],
   },

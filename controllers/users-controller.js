@@ -1,31 +1,35 @@
 const usersService = require('../services/users-service');
 
 module.exports = (app) => {
+
   const register = (req, res) => {
-    const user = req.body;
-    usersService.register(user, res).then((newUser) => {
-      res.send(newUser);
-    });
-  };
+    const user = req.body
+    usersService.register(user)
+      .then(rs => {
+        console.log(rs)
+        res.send(rs)
+      })
+  }
 
   const login = (req, res) => {
     const credentials = req.body;
-    usersService.login(credentials).then((actualUser) => {
-      req.session['profile'] = actualUser;
-      res.send(actualUser);
-    });
+    usersService.login(credentials)
+      .then(actualUser => {
+        res.send(actualUser)
+      });
   };
 
   const profile = (req, res) => {
-    const currentUser = req.session['profile'];
-    res.send(currentUser);
+    const currentUser = req.session['profile']
+    res.send(currentUser)
   };
 
   // Change findById to findByUsername (Some privacy risks exist)
-  const profileAfterLoggedIn = (req, res) => {
-    const userId = req.params['id'];
-    usersService.findUserById(userId).then((user) => {
-      return res.send(user);
+  const findUserProfile = (req, res) => {
+    const username = req.params.username
+    usersService.findUserByUsername(username)
+    .then((user) => {
+      res.send(user);
     });
   };
 
@@ -36,91 +40,124 @@ module.exports = (app) => {
 
   const updateUser = (req, res) => {
     const newUser = req.body;
-    const currentUser = req.session['profile'];
-    usersService.updateUser(newUser, currentUser, res).then((newUser) => {
-      res.send(newUser);
+    usersService.updateUser(newUser, newUser)
+    .then((updatedUser) => {
+      res.send(`${updatedUser.ok}`);
     });
   };
 
   const deleteUser = (req, res) => {
-    const deleteUser = req.body;
-    const currentUser = req.session['profile'];
-    usersService.deleteUser(currentUser, deleteUser, res);
+    const userToDelete = req.body;
+    usersService.deleteUser(currentUser, userToDelete, res);
   };
 
   const findAllUsers = (req, res) => {
-    const user = req.session['profile'];
-    usersService.findAllUsers(user, res).then((users) => {
+    const user = req.body
+    usersService.findAllUsers(user)
+    .then(users => {
       res.send(users);
-    });
+    })
+  };
+
+  const findUserByName = (req, res) => {
+    let firstname =
+      req.query.firstname === undefined ? '' : req.query.firstname;
+    let lastname = req.query.lastname === undefined ? '' : req.query.lastname;
+    usersService.findUserByName(firstname, lastname)
+      .then((result) => {
+        res.send(result)
+      });
   };
 
   const findUserFollowing = (req, res) => {
-    const currentUser = req.session['profile'];
+    const currentUser = req.body
     usersService.findUserFollowing(currentUser).then((userFollowing) => {
       res.send(userFollowing);
     });
   };
 
   const addUserFollowing = (req, res) => {
-    const currentUser = req.session['profile'];
-    const followingEmail = req.body.followingEmail;
-    usersService
-      .addUserFollowing(currentUser, followingEmail)
+    const info = req.body
+    usersService.addUserFollowing(info.user, info.username)
       .then((newUserFollowing) => {
         res.send(newUserFollowing);
+        if(newUserFollowing) {
+          usersService.findUserByUsername(info.username)
+            .then(rs => {
+              const followerUsername = info.user.split('@')
+              const userEmail = rs[0].fplEmail
+              addUserFollower({
+                body: { user: userEmail, username: followerUsername[0]}
+              })
+            })
+        }
       });
   };
 
   const deleteUserFollowing = (req, res) => {
-    const currentUser = req.session['profile'];
-    const followingEmail = req.body.followingEmail;
+    const info = req.body
     usersService
-      .deleteUserFollowing(currentUser, followingEmail)
-      .then((newUserFollowing) => {
-        res.send(newUserFollowing);
+      .deleteUserFollowing(info.user, info.username)
+      .then((response) => {
+        res.send(response)
+        if(response) {
+          usersService.findUserByUsername(info.username)
+            .then(rs => {
+              const followerUsername = info.user.split('@')
+              const userEmail = rs[0].fplEmail
+              deleteUserFollower({
+                body: { user: userEmail, username: followerUsername[0] }
+              })
+            })
+        }
       });
   };
 
   const findUserFollowers = (req, res) => {
-    const currentUser = req.session['profile'];
-    usersService.findUserFollowers(currentUser).then((userFollower) => {
+    const currentUser = req.body
+    usersService.findUserFollowers(currentUser)
+    .then((userFollower) => {
       res.send(userFollower);
+    });
+  };
+  const findUserById = (req, res) => {
+    const id = req.params['id'];
+    usersService.findUserById(id)
+    .then(response => {
+      res.send(response.userTeam);
     });
   };
 
   const addUserFollower = (req, res) => {
-    const currentUser = req.session['profile'];
-    const followerUsername = res.body;
-    usersService
-      .addUserFollower(currentUser, followerUsername)
+    const info = req.body
+    usersService.addUserFollower(info.user, info.username)
       .then((newUserFollower) => {
-        res.send(newUserFollower);
+        console.log(newUserFollower)
       });
   };
 
   const deleteUserFollower = (req, res) => {
-    const currentUser = req.session['profile'];
-    const followerUsername = res.body;
-    usersService
-      .deleteUserFollower(currentUser, followerUsername)
+    const info = req.body
+    usersService.deleteUserFollower(info.user, info.username)
       .then((newUserFollower) => {
-        res.send(newUserFollower);
+        console.log(newUserFollower)
       });
   };
 
+  app.get('/api/team/:id', findUserById);
   app.post('/api/users/profile', profile);
-  app.get('/api/users/profile/:id', profileAfterLoggedIn);
+  app.get('/api/users/profile/:username', findUserProfile);
   app.post('/api/users/register', register);
   app.post('/api/users/login', login);
   app.post('/api/users/logout', logout);
-  app.get('/api/users', findAllUsers);
+  app.post('/api/users', findAllUsers);
+  app.get('/api/search/users', findUserByName);
   app.put('/api/users/update', updateUser);
   app.delete('api/users/delete', deleteUser);
-  app.get('/api/users/following', findUserFollowing);
+  app.post('/api/users/following', findUserFollowing);
   app.post('/api/users/following/add', addUserFollowing);
   app.put('/api/users/following/delete', deleteUserFollowing);
-  app.get('/api/users/followers', findUserFollowers);
+  app.post('/api/users/followers', findUserFollowers);
   app.put('/api/users/followers/add', addUserFollower);
   app.put('/api/users/followers/delete', deleteUserFollower);
 };

@@ -1,11 +1,12 @@
 const axios = require('axios');
 const configs = require('./api-configs');
+const FIXTURES_API_URL = 'https://fantasy.premierleague.com/api/fixtures'
 const PROXY_API_URL = 'https://codeleague-cors-proxy.herokuapp.com/';
 const userTeamService = require('./users-team-service');
 
 const findAllEvents = () => {
   return axios(configs.baseConfig)
-    .then((response) => response.data.events)
+    .then(response => response.data.events)
     .catch((error) => {
       console.log(error);
     });
@@ -17,32 +18,29 @@ const findEventById = (eventId) => {
   );
 };
 const findCurrentEvent = () => {
-  return axios(baseConfig)
-    .then((response) =>
-      response.data.events.filter((event) => event.is_next === true)
-    )
+  return axios(configs.baseConfig)
+    .then(response =>
+      response.data.events.filter(event => event.is_next === true))
     .catch((error) => {
       console.log(error);
     });
 };
 
 const findMatchesForEvent = (eventId) => {
-  axios
-    .get(PROXY_API_URL, configs.fixturesConfig)
-    .then((response) =>
-      response.data.filter((event) => event.event === eventId)
-    )
+  return axios(configs.fixturesConfig)
+    .then(response => response.data.filter(event => event.event == eventId))
     .catch((error) => {
       console.log(error);
     });
-};
+}
 
 const findEventAndMatches = () => {
   let matches = {};
 
   // Get Json object from statis API
   return axios(configs.baseConfig)
-    .then((baseRs) => {
+    .then(baseRs => {
+
       // Get the current event
       let rs = baseRs.data.events.filter((event) => event.is_next === true);
 
@@ -53,7 +51,8 @@ const findEventAndMatches = () => {
       // TODO: explore using query parameter instead https://fantasy.premierleague.com/api/fixtures?event=31
       // Get Json object from fixture API
       return axios(configs.fixturesConfig)
-        .then((fixRs) => {
+        .then(fixRs => {
+
           // Get all the matches that matches the event id
           rs = fixRs.data.filter((event) => event.event === matches.event_id);
 
@@ -98,5 +97,5 @@ module.exports = {
   findCurrentEvent,
   findEventById,
   findMatchesForEvent,
-  findEventAndMatches,
-};
+  findEventAndMatches
+}
